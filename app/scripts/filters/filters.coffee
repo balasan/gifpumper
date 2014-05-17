@@ -101,7 +101,7 @@ app.filter 'youtube', ($sce) ->
     src
 
 
-app.filter 'vimeo', [ '$sce',($sce) ->
+app.filter 'vimeo', ($sce) ->
   (content, type) ->
     video_id = content.split('vimeo.com/')[1];
     if type == "object" 
@@ -109,23 +109,24 @@ app.filter 'vimeo', [ '$sce',($sce) ->
     if type == "iframe"
       src = $sce.trustAsResourceUrl("//player.vimeo.com/video/"+video_id+"?autoplay=1&loop=1")
     src
-]
-app.filter 'soundcloud', [ '$sce',"$http",($sce, $http) ->
+
+
+app.filter 'soundcloud', ($sce, $http) ->
   (content) ->
     # return ""
     # content = $sce.trustAsHtml(content.replace('height=\"166\"','height=\"100%\"'))
     content = $sce.trustAsHtml(content)
-]
 
-app.filter 'trusted', [ '$sce',"$http",($sce, $http) ->
+
+app.filter 'trusted', ($sce, $http) ->
   (content) ->
     # return ""
     # content = $sce.trustAsHtml(content.replace('height=\"166\"','height=\"100%\"'))
     content = $sce.trustAsResourceUrl(content)
-]
+
 
 # TODO: split up backgoundImage and backgroundGradient
-app.filter 'bgFilter', [ '$filter', ($filter) ->
+app.filter 'bgFilter', ($filter) ->
   (pageObj) ->
     color = ''
     img = ''
@@ -152,7 +153,7 @@ app.filter 'bgFilter', [ '$filter', ($filter) ->
       backgroundGradient : gradient      
       backgroundColor : color 
       backgroundSize : size 
-]
+
 
 # GALLERY
 app.filter "galleryThumb", () ->

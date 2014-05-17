@@ -96,7 +96,7 @@ app.controller "mainCtrl",($scope, currentUser) ->
 
 
 
-app.controller "userCtrl",[ "$scope", "userService","$routeParams", ($scope, userService,$routeParams) ->
+app.controller "userCtrl", ($scope, userService,$routeParams) ->
 
   $scope.userProfile = $routeParams.userName
   currentState = userService.getData()
@@ -127,7 +127,6 @@ app.controller "userCtrl",[ "$scope", "userService","$routeParams", ($scope, use
     $scope.filter = 'created'
     $scope.pagesData=[]
     $scope.getNextPage()
-]
 
 
 
@@ -137,7 +136,8 @@ app.controller "userCtrl",[ "$scope", "userService","$routeParams", ($scope, use
 
 
 
-app.controller "feedCtrl",[ "$scope", "feed",  ($scope, feed) ->
+
+app.controller "feedCtrl", ($scope, feed) ->
 
   $scope.filter=""
   $scope.feed = feed.getData()
@@ -156,7 +156,6 @@ app.controller "feedCtrl",[ "$scope", "feed",  ($scope, feed) ->
       $scope.loading=false
   if !$scope.feed.length
     $scope.getNextPage()
-]
 
 
 
@@ -164,7 +163,8 @@ app.controller "feedCtrl",[ "$scope", "feed",  ($scope, feed) ->
 
 
 
-app.controller "galleryCtrl",[ "$scope", "galleryService", ($scope, galleryService) ->
+
+app.controller "galleryCtrl", ($scope, galleryService) ->
 
   currentState = galleryService.getData()
   $scope.filter = currentState.filter
@@ -191,4 +191,4 @@ app.controller "galleryCtrl",[ "$scope", "galleryService", ($scope, galleryServi
   if !$scope.pagesData[0]
     $scope.getNextPage()
 
-]
+
