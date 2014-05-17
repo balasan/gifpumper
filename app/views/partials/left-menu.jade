@@ -1,0 +1,92 @@
+#menuContainer.gpui()
+  div.innerContainer
+      //- #editElementButton.menuButton.dropButton(ng-click="elementMenu=!elementMenu; pageMenu=false")
+
+      //- div.menuDiv.profileOnly(ng-show="pageName=='profile'") 
+        //- a(href='javascript:void(0);' ng-click='addMenu=!addMenu') ⇧A Profile Image
+
+    #editPageButton.menuButton.dropButton(ng-click="pageMenu=!pageMenu; elementMenu=false")
+      |Page
+      #editPageMenu.menu(sub-menu ng-show="pageMenu")
+        div.menuDiv 
+          a(href='javascript:void(0);' ng-click='moreMenu=!moreMenu') ⇧N New
+          a(href='javascript:saveVersion()') ⇧S Save
+          a(href='javascript:void(0);' ng-click='privacyMenu=!privacyMenu') ⇧P Privacy
+    //- #animateButton.menuButton(ng-click='animatePage=!animatePage') Animate
+    //- #helpButton.menuButton(ng-click="helpMenu!=helpMenu") Help
+
+.nuMenuContainer.gpui(ng-show="pageName!='profile' && pageName!='main'") 
+    .nuMenu(rand-color ng-click='settingsMenu=!settingsMenu') 
+      i.fa.fa-language 
+    .nuMenu(rand-color ng-click='settingsMenu=!settingsMenu') 
+      i.fa.fa-cogs 
+    .nuMenu(rand-color ng-click='backgroundMenu=!backgroundMenu') 
+      |bg 
+    .nuMenu(rand-color ng-click='addMenu=!addMenu; ')
+      i.fa.fa-plus 
+
+#likePageButton.gpui(style="")
+    a()
+      #likeButtonText(style="float:left;cursor:pointer",onclick="likePage()")
+        |{{pageData.likesN}}
+      #likeIm(onclick="likePage()") 
+        img.likeHeart(src="https://s3.amazonaws.com/gifpumper/ui/heart-03.gif")
+    #pageName()
+      a(href="/{{pageName}}") {{pageName}} 
+      |by 
+      a(href="/profile/{{pageData.owner}}") {{pageData.owner}}
+    div(class="fb-like",id="fb-like", data-href="http://gifpumper.com/{{pageName}}", layout="button_count", data-send="false",   data-width="90", data-show-faces="false", style="float:left;width:90px;height:auto")
+
+
+div(ng-include="'partials/content-menus'")
+
+
+////more pages/////
+
+#moreMenu.uiOpen(ng-show='moreMenu')
+  | create new page:
+  br
+  input(ng-model="newPageName" type='text',id='newPage', name='newPage', placeholder='enter unique page name', onfocus="typing=true", onblur="typing=false")
+  //textarea.addEditors(style='width:auto;', type='text',id='newPage', name='newPage', placeholder='enter user name', onfocus="value='', typing=true",onblur="typing=false", onKeyPress="searchPages();")
+  br
+  input#makeNew.button(type='submit', style='width:78px;', name='makeNew', value='new page',ng-click="addPage(newPageName,false)")
+  | 
+  input#save.button(style='width:78px;', type='submit', name='save', value='save as',ng-click="addPage(newPageName,true)")
+  br
+  | *you must login to create your own page
+  .x
+    a(href='javascript:void(0);' ng-click="moreMenu=false") x
+
+
+
+
+
+
+#pageMenu.uiOpen(ng-show="settingsMenu")
+  form(name='privacyForm')
+    | Set Page Privacy:
+    br
+    input(ng-model="pageData.privacy" ng-click="setPrivacy()" type='radio', name='privacy', value='0',checked=check)
+    | public
+    br
+    input(ng-model="pageData.privacy" ng-click="setPrivacy()" type='radio', name='privacy', value='1',checked=check)
+    | only i can add/remove images
+    br
+    input(ng-model="pageData.privacy" ng-click="setPrivacy()" type='radio', name='privacy', value='2',checked=check)
+    | only i can make changes
+    br
+    input(ng-model="pageData.privacy" ng-click="setPrivacy()" type='radio', name='privacy', value='3',checked=check)
+    | invisible
+    br
+    input.button(value="delete this page" type='submit' ng-click="deletePage();") 
+
+  //- br
+  //- |add editors:
+  //- br
+  //- textarea.addEditors(style='width:auto;', type='text',id='addEditors', name='addEditors', placeholder='enter user name', onfocus="value='', typing=true",onblur="typing=false", onKeyPress="searchUsers();")
+  //- #searchResults
+  //- input#pageSettings.button(type='submit', style='width:78px;', name='pageSettings', value='Save',onclick='setPrivacy()') 
+  .x
+    a(href='javascript:void(0);' ng-click="settingsMenu=false") x
+
+

@@ -1,0 +1,12 @@
+#profileContainer.shadow(page-data="userData" app-background )
+    div
+      #userName
+        a(href='javascript:changeProfileColor()') {{userData.username}}
+        #profileClicks(style='color: white; font-size: 12px;') 10484 clicks
+      img#userImage(src='{{userData.userImage}}', style='z-index: 100; width: 93%; height: auto;')
+
+div.pageList.userList( ng-include="'/partials/userGallery'", infinite, )
+
+
+
+  

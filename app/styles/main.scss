@@ -1,0 +1,23 @@
+@import "compass";
+
+/* ERIC MEYER RESET 
+------------------------------------------------------------*/
+// @import "compass/reset";
+
+/* PAUL IRISH BOX SIZING
+------------------------------------------------------------*/
+*
+{ box-sizing: border-box } 
+// @import "mixins";
+@import "compass/utilities/general/clearfix";
+// @import "animation";
+
+$fa-font-path: "/bower_components/font-awesome/fonts";
+@import "font-awesome/scss/font-awesome";
+
+@import "oldgp";
+@import "mainPage";
+@import "menus";
+@import "left-menu";
+@import "element";
+

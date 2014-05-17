@@ -1,0 +1,183 @@
+
+
+////ADD/////
+
+#addMenu.uiOpen(ng-show="addMenu" add-menu)
+  |ADD:
+  .editTabs(ng-init="addType='image'")
+      a(href="javascript:void(0)"  ng-click="addType='image'") Image | 
+      a(href="javascript:void(0)"  ng-click="addType='text'") Text | 
+      a(href="javascript:void(0)"  ng-click="addType='media'") Media | 
+      a(href="javascript:void(0)"  ng-click="addType='div'") Div
+  
+  #editImageContainer(ng-show="addType=='image'")
+    p image url:
+    input.textInput#gifUrlA(ng-model="newImgUrl" type='text', name='gifUrlA', placeholder='http://blahblah.gif',onfocus="typing=true; ", onblur="typing=false;")
+    p repetitions:
+    input.textInput#addNumber(ng-init="imageNumber=1" ng-model="imageNumber" type='text', name='addNumber', value='1', maxlength='1/',onfocus="value=''")
+    p
+  
+  #editTextContainer(ng-show="addType=='text'")
+    textarea#addContent.tinymce
+  
+  #editMediaContainer(ng-show="addType=='media'")
+    p
+    | youtube link:
+    br
+    input.mediaAdd(ng-model="youtubeUrl" style='width:220px;', type='text', id='youtubeUrl', placeholder='http://youtube.com/xxxx',onfocus="typing=true; ", onblur="typing=false;")
+    br
+    br
+    | vimeo link:
+    br
+    input.mediaAdd(ng-model="vimeoUrl" style='width:220px;', type='text', id='vimeoUrl', placeholder='http://vimeo.com/555555',onfocus="typing=true; ", onblur="typing=false;")
+    br
+    br
+    | soundcloud embed:
+    br
+    textarea.mediaAdd(ng-model="soundcloudUrl" style='width:220px;', type='text', id='soundCloud', placeholder='paste soundcloud embed code here',onfocus="typing=true; ", onblur="typing=false;")
+    br
+    br
+    | mp3/mov embed:
+    br
+    input.mediaAdd(ng-model="mp3Url" style='width:220px;', type='text', id='mp3', placeholder='http://domain.com/sound.mp3',onfocus="typing=true; ", onblur="typing=false;")
+    br
+    br
+    | other:
+    br
+    textarea#media(ng-model="customMedia" style='width:220px; height:40px', type='text', name='embed', placeholder='paste embed code here',onfocus="typing=true; ", onblur="typing=false;")
+    br
+  #editDivContainer(ng-show="addType=='div'")
+    p
+    | background color:
+    br
+    input.textInput#divColor(ng-model="divColor"  type='text', placeholder='name, hex or rgba(r,g,b,a)',onfocus="typing=true; ", onblur="typing=false;")
+    br
+    | background image url:
+    br
+    input.textInput#divBgUrl(ng-model="divBackground" type='text', placeholder='http://blahblah.gif',onfocus="typing=true; ", onblur="typing=false;")
+    br
+    | preset: 
+    form(name='divType')
+      input(type='radio', ng-model='geoPreset', value='sPlane', checked='CHECKED')
+      | flat div
+      br
+      input(type='radio', ng-model='geoPreset', value='hPlane')
+      | ground plane
+      br
+      input(type='radio', ng-model='geoPreset', value='vPlane')
+      | wall plane    
+      br
+    br  
+  input(type='checkbox', id='add2d' ng-model="is2d")
+  |no 3d transforms? 
+  br
+
+  div(style="padding:0px")
+    input.textInput#add.button( type='button', name='addGif', value='add', ng-click="addNewImg()")
+  .x(style='position:absolute; right:0; top:0; border: 1px white;')
+    a(href='javascript:void(0);' ng-click='$parent.addMenu=false') x
+
+
+
+
+
+///////EDIT///////
+#editMenu.uiOpen( edit-menu ng-show="$parent.editMenu")
+  |EDIT:
+  .editTabs(ng-init="image")
+      a(href="javascript:void(0)"  ng-click="editType = 'image'") Image | 
+      a(href="javascript:void(0)"  ng-click="editType = 'text'") Text | 
+      a(href="javascript:void(0)"  ng-click="editType = 'media'") Media | 
+      a(href="javascript:void(0)"  ng-click="editType = 'div'") Div
+  
+  #editImageContainer(ng-show="editType == 'image'")
+    p edit image url:
+    input.textInput#editImage.editType(ng-model="editElement.url" type='text', placeholder='http://blahblah.gif')
+    input.textInput#keyOut.button(type='button', name='keyOut', value='Key-Out White', onclick="keyOut()")
+    p (wait for url to refresh)
+    p more img effects here: 
+      br
+      a(href="http://asdf.us/im/", target='blank') http://asdf.us/im/
+    
+
+  #editTextContainer(ng-show="editType == 'text'")
+    textarea#editContent.editType.tinymce(ng-model="editElement.content")
+  
+
+  #editMediaContainer(ng-show="editType == 'media'")
+    p 
+    youtube link:
+    input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editYoutubeUrl', placeholder='http://youtube.com/xxxx',onfocus="typing=true; ", onblur="typing=false;")
+    p
+    | vimeo link:
+    input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editVimeoUrl', placeholder='http://vimeo.com/555555',onfocus="typing=true; ", onblur="typing=false;")
+    p
+    | soundcloud link:
+    input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editSoundCloud', placeholder='paste soundcloud link here',onfocus="typing=true; ", onblur="typing=false;")
+    p
+    | mp3/mov embed:
+    input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editMp3', placeholder='http://domain.com/sound.mp3',onfocus="typing=true; ", onblur="typing=false;")
+    p
+    | other:
+    br
+    textarea.textInput.editType.mediaEdit(ng-model="editElement.content" style='width:220px;height:100px', type='text', name='embed', id="editMedia", placeholder='paste embed code here',onfocus="typing=true; ", onblur="typing=false;")
+    p
+  #editDivContainer(ng-show="editType == 'div'")
+    p
+    div background color:
+    input.textInput#editBackgroundColor.editType(ng-model="backgroundColor" type='text', placeholder='name, hex or rgba(r,g,b,a)',onfocus="typing=true; ", onblur="typing=false;")
+    p
+    div background image url:
+    input.textInput#editBackgroundImage.editType(ng-model="backgroundImage" type='text', placeholder='http://blahblah.gif',onfocus="typing=true; ", onblur="typing=false;")
+    p
+    div width:  
+      input#editWidth(style='width:50px;display:inline;', type='text')  
+    div height: 
+      input#editHeight(style='width:50px;display:inline;', type='text') 
+  
+  input(type='checkbox', id='edit2d')
+  |no 3d transforms? 
+  div(style="padding:0px")
+    input.textInput#replace.button(type='button', name='replace', value='replace', ng-click="replaceElement()")
+    
+  .x
+    a(href='javascript:void(0);' ng-click='$parent.$parent.editMenu=false') x
+
+
+////DELETE/////
+#deleteMenu.uiOpen(ng-show="deleteMenu")
+  form(name='f1')
+    input(type='radio', name='deleteType', value='one', checked='CHECKED')
+    | last image
+    input(type='radio', name='deleteType', value='all')
+    | all
+    p
+  | (shortcut: Ctrl X)
+  input.textInput#delete.button(type='button', name='delete', value='delete', onclick="deleteImage()")
+  .x
+    a(href='javascript:void(0);' ng-click='$parent.deleteMenu=false') x
+
+
+
+//////////- BACKGROUND
+#backgroundMenu.uiOpen.menuHover(ng-show="backgroundMenu")
+  | backgroud color:
+  input.textInput#background(type='text', ng-model='pageData.background', placeholder='color, hex or rgb(0,0,255)', ng-change='setBackground("background")', onfocus="typing=true;", onblur="typing=false;")
+  | background image:
+  input.textInput#backgroundImage(type='text', ng-model='pageData.backgroundImage', placeholder='enter blank space to clear', maxlength='600', ng-change='setBackground("backgroundImage")', onfocus="typing=true; ", onblur="typing=false;")
+  form(name='bgType')
+      input(type='radio', ng-model='pageData.bgDisplay', value='', ng-change='setBackground()')
+      | tile
+      input(type='radio', ng-model='pageData.bgDisplay', value='cover', ng-change='setBackground()')
+      | full screen    
+  //div
+    //- a(href='http://gradients.glrzad.com', title='select the code inside ( ); for webkit') gradients.glrzad.com (hvr fr tip)
+  .x
+    a(href='javascript:void(0);' ng-click='$parent.backgroundMenu=false') x
+
+
+
+
+
+
+

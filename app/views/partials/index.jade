@@ -1,0 +1,11 @@
+div.feed(page-data="pageData" feed infinite ng-controller="feedCtrl" )
+
+div.pageList( gallery, infinite, ng-controller="galleryCtrl" )
+
+#online.moveable.gpui(ng-controller="onlineCtrl")
+  div(style="height:18px; padding:2px;") users on this page:
+  div(ng-repeat="user in onlineUsers")
+    a(href="/profile/{{user}}"){{user}}
+    
+div(ng-include="'partials/chat'")  
+//- div(ng-include="'partials/left-menu'")  

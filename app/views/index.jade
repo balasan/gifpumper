@@ -1,0 +1,186 @@
+extends layout
+block content
+  <div id="fb-root"></div>
+  #feed.userPages
+        //- div(style="padding:5px;font-size:20px;")
+          //- span.label1(style="z-index:20000")
+            //- |feed:
+        #feedContainer
+
+  div(ng-view='ng-view')
+
+  div(ng-include="'partials/right-menu'")
+
+
+  //- #userPages.userPages
+  //-   div(style="padding:5px;font-size:20px;")
+  //-     span.label1(style="z-index:20000")
+  //-       //- |pages:  
+  //-   #pagesListProfile
+  //-   #pagesList
+  //-     #mainFeedDiv.userPages.pageItem
+  //-       //- div(style="padding:5px;font-size:20px;")
+  //-         //- span.label1(style="z-index:20000")
+  //-           //- |active pages:
+  //-       #activeNow
+
+  #loadingImg(ng-hide="true")
+    img(src="http://dump.fm/images/20110501/1304306298412-dumpfm-GucciSoFlosy-loading3.gif")
+   
+
+
+
+
+
+
+
+  #helpMenu.uiClosed(name='helpMenu', style='left:300px;border:1px solid grey; padding:0;padding-top:15px; top:50px; width=300px')
+    div(style='background-color:white;  padding: 15px; width:340px; height:500px;overflow:auto; font-size:14px;color:black')
+      b Walk Around:
+      br
+      img(src='http://s3.amazonaws.com/gifpumper/ui/wasd.png',height='60px') 
+      |  or arrow keys
+      br
+      b Rotate Canvas:
+      br
+      //div(style:'margin:-15px')
+      img(src='http://s3.amazonaws.com/gifpumper/ui/space.png',height='30px')
+      br
+      br
+      b Move element:
+      br
+      |  click and drag
+      br
+      br
+      b Resize:
+      br
+      img(src='http://s3.amazonaws.com/gifpumper/ui/shift_key.png',height='35px')
+      |  and drag
+      br
+      br
+      b Move forward/back:
+      br
+      img(src='http://s3.amazonaws.com/gifpumper/ui/alt_key.jpg',height='35px')
+      |   drag up/down
+      br
+      br
+      b Rotate around Z:
+      br
+      img(src='http://s3.amazonaws.com/gifpumper/ui/letter_z.png',height='35px')
+      |  drag left/right
+      br
+      br
+      b Rotate around the X/Y:
+      br
+      img(src='http://s3.amazonaws.com/gifpumper/ui/letter_x.png',height='35px')
+      |  drag
+      br
+      br
+      b Delete element: 
+      br
+      img(src='http://s3.amazonaws.com/gifpumper/ui/ctrl%20key.png',height='35px')
+      | 
+      img(src='http://s3.amazonaws.com/gifpumper/ui/letter_x.png',height='35px')
+      br
+      br
+      br
+      b Tips:
+      br
+      | - set page privacy in Page->Settings menu
+      br
+      | - most menus can be accessed by hitting Shift and the first letter of the menu
+      br
+      | - save versions of pages in Page menu (version cannot be edited, page owner can delete versions)
+      br
+      br
+      b Info:
+      br
+      | Gifpumper is a communal web creation platform. All changes are seen by everyone
+      br
+      | instantaneously, enabling realtime collaboration between many users.
+      br
+      br
+      | For questions, suggestions and feedback post a msg on <a href="javascript: goToPage('balasan','profile')">balasan's profile</a> or on the 
+      a(href='http://www.facebook.com/pages/gifpumpercom/117231671686998') gifpumper facebook page
+      br
+      br 
+      | Gifpumper was created by Slava Balasanov with support from 
+      a(href="http://eyebeam.org",target='blank') Eyebeam
+      br
+      br
+      | props to ryz from 
+      a(href="http://asdf.us",target='blank') http://asdf.us
+      |  for the key-out tool
+      br
+    .x
+      a(href='javascript:openMenu(\'helpMenu\');buttonPress("help");') x
+
+
+
+  ////page settings/////
+
+
+
+
+  #saveMenu.uiClosed(style='left:400px; top:100px;')
+    //|Save page in this site:
+    //br
+    //input#sightName(style='width:155px;', type='text', name='siteName', value='', size='32', maxlength='32', onfocus="typing=true", onblur="typing=false")
+    br
+    |Version Name:
+    br
+    input#versionName(style='width:155px;', type='text', name='versionName', value='', size='32', maxlength='32', onfocus="typing=true", onblur="typing=false")
+    br
+    input#pageSettings.button(type='submit', style='width:78px;', name='saveVersion', value='Save Version',onclick='saveVersion()') 
+    .x
+      a(href='javascript:openMenu(\'saveMenu\');') x
+
+
+  //input#console1(class='console1',id='console1', style='background-color:white; width:100%; top:0px; left:0px; margin-left:5px; margin-right:5px; z-index:999;', type='text', value='', size='100')
+
+  //#topBar(style="position:fixed;top:0px;left:0;width:100%;height:26px;background:rgba(255,255,255,.5);")
+
+
+      //- &nbsp   
+      //-else
+      //  a(href='/') GIFPUMPER.COM
+      //pageInfoDiv(style="float:right")     
+
+
+
+
+  #profileContainer.shadow
+    div(style="position:absolute;bottom:-15px;right:5px;font-size:13")
+
+
+  #prevVersionDiv.shadow.twoD(style="display:none;z-index:1000;top:50%;left:0px;position:fixed;")
+       a(href="javascript:goToPage(pageData.pageName, null, prevVersion)")
+         img(src='https://s3.amazonaws.com/gifpumper/ui/arrow-left.gif')
+  #nextVersionDiv.shadow.twoD(style="display:inline;display:none;z-index:1000;top:50%;right:0px;position:fixed;")  
+       a(href="javascript:goToPage(pageData.pageName, null, nextVersion)")
+         img(src="https://s3.amazonaws.com/gifpumper/ui/arrow-right.gif")   	  
+
+  //#whoLikes(style="display:none;padding:5px; position:relative;font-size:12px")
+  //- .x
+  //-   a(href='javascript:$(\'#whoLikes\').hide();') x
+   
+
+  #alertDiv(style="padding:10px;background:white;display:none")
+
+
+  #invite.twoD(style="position:fixed; top:0px;padding:5px;left:60px;width:750px;display:none;background:none") 
+    marquee.label2(behavior='scroll', style="font-size: 18px;") Welcome to GIFPUMPER! 
+      a(href="javascript:openMenu(\'loginMenu\')") login or register
+      |  to create pages or edit existing ones
+
+  #miniLogo(onclick="javascript:goToPage(\'main\')")
+    div.zspin(style='width:25px;float:left;margin-top:-2px')
+      img(src="https://s3.amazonaws.com/gifpumper/ui/cd.png",style="width:100%")
+    div(style="float:left;position:relative;margin-top:0px")
+      div.label2(style="font-size:18px;") GP
+
+  #tipDiv(style="position:fixed;bottom:5px;right:5px;opacity:.8;display:none")
+      img(src="https://s3.amazonaws.com/gifpumper/ui/space.png", style="width:120px")
+      |  
+      img(src="https://s3.amazonaws.com/gifpumper/ui/wasd.png", style="width:95px")
+

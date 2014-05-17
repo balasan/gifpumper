@@ -1,0 +1,22 @@
+//- div(ng-controller="pageCtrl")
+
+#div3d
+  #mainDiv.mainDiv(page style="\
+  -webkit-transform: {{mt | mainTransform}};\
+  -moz-transform: {{mt | mainTransform}};\
+  -0-transform: {{mt | mainTransform}};\
+  transform: {{mt | mainTransform}};")
+
+
+
+#online.moveable.gpui(ng-controller="onlineCtrl")
+  div(style="height:18px; padding:2px;") users on this page:
+  div(ng-repeat="user in onlineUsers")
+    a(href="/profile/{{user}}"){{user}}
+    
+#chatButton(style="display:none; height:30px") 
+     | <a href='javascript:openChat();'><img src="http://how2program.com/thumbs/4054_Pixel_chat_icon_._.._.jpg6U4SDMK2R5.jpg",border='0px', height='30px'></a>
+
+div(ng-include="'partials/chat'")
+
+div(ng-include="'partials/left-menu'")  

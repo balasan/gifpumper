@@ -1,0 +1,9 @@
+//- object.mediaObj(width='100%', height='100%')
+//- param(name='movie' value="{{el.content | vimeo:'object'}}")
+//- param(name='allowFullScreen', value='true')
+//- param(name='allowscriptaccess', value='always')
+//- param(value='transparent', name='wmode')
+//- embed(wmode='transparent', embed-src="{{el.content | vimeo:'object'}}", type='application/x-shockwave-flash', width='100%', height='100%', allowscriptaccess='always', allowfullscreen='true')
+
+
+iframe.youtube-player(type='text/html', width='100%', height='100%', src='{{el.content | vimeo:"iframe"}}', allowfullscreen='allowfullscreen', frameborder='0', autoplay="1")

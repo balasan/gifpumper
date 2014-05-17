@@ -1,0 +1,25 @@
+div.element.editableElement(
+  id="{{el._id}}"
+  ng-controller="elController"
+  element 
+  ng-class="{selectedEl: selected == el._id, notSelected :selected !=null && selected != el._id}"
+  ng-repeat="el in pageData.images"
+  style="top:{{el.top}};\
+  left:{{el.left}};\
+  width:{{el.width}};\
+  height:{{el.height}};\
+  -webkit-transform: {{el | transition}};\
+  -moz-transform: {{el | transition}};\
+  -0-transform: {{el | transition}};\
+  transform: {{el | transition}};")
+  .elUi(ng-show="selected == el._id")
+    i.delete.fa.fa-times(ng-click="deleteElement()")
+    i.resize.fa.fa-expand(ng-mousedown="transform='resize'")
+    .leftElUi
+      i.zTransform.fa.fa-arrows-v(ng-mousedown="transform='z'")
+      i.zTransform.fa.fa-windows(ng-mousedown="transform='xy'")
+      i.zTransform.fa.fa-repeat(ng-mousedown="transform='rotate'")
+      i.zTransform.fa.fa-arrows(ng-mousedown="transform='move'")
+      i.fa.fa-pencil-square-o(ng-click="openEditor()")
+  span( ng-include="'partials/elements/'+(el.contentType | contentType)+'El'")
+

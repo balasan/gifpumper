@@ -1,0 +1,85 @@
+#menuContainer{
+  z-index:10002;
+  top:5px;
+  left:5px;
+  position:fixed;
+  .innerContainer{
+    float:left;
+    z-index:200000;
+    margin-right:4px;
+    padding-right:4px;
+    position:relative
+  }
+}
+
+#pageMenu{
+  left:400px;
+}
+.menuDiv{
+  a{
+    display:block;
+  }
+}
+.menuButton{
+  margin-right:10px;
+}
+.uiOpen{
+  .textInput{
+    display:block;
+    width:180px;
+  }
+  #editMediaContainer{
+    .textInput{
+      width:220px;
+    }
+  }
+  input[type='text'],input[type='submit']{
+    display:block;
+  }
+}
+.menuHover{
+  padding-bottom:20px;
+}
+.editTabs{
+  font-size:15px;
+  // text-align:center;
+}
+.nuMenuContainer{
+  position:fixed;
+  top:40px;
+  left:10px;
+  @include transform(translateZ(10000px));
+
+  .nuMenu{
+    padding:10px;
+    font-size:20px;
+    color:white;
+    // background:rgba(0,255,50,1);
+    text-align:center;
+    margin:4px;
+    border-radius: 4px;
+    cursor:pointer;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.25);
+    @include box-shadow(1px 1px 2px rgba(0,0,0,.25));
+    @include transition(all .4s);
+    &:hover{
+      text-shadow: 0px 0px 1px rgba(0,0,0,.25);      
+    }
+  }
+}
+#likeIm{
+  float:left;
+}
+.likeHeart{
+  width: 21px; 
+  margin-top: -2px; 
+  margin-left: 2px;
+}
+#likePageButton{
+  z-index:10002;
+  @include transform(translateZ(10000px));
+
+  top:5px;
+  left:50px;
+  position:fixed;
+}

@@ -1,0 +1,13 @@
+div.gpui#chat(ng-controller="chatCtrl")
+  #chatTop.menuTop.chat.label2(style="padding-top:1px;padding-bottom:1px;  opacity: .7;color:red")
+  | msg
+  .x 
+    a(href='javascript:openChat();') x
+  #chatBox.chat(chatbox)
+    div(ng-repeat="text in pageData.text")
+      span(ng-show="text.user != pageData.text[$index-1].user" )
+        a.chatUser(href="/profile/{{text.user}}" ng-init='lastUser=text.user') {{text.user}}
+        |: 
+      |{{text.text}}
+  textarea#inputBox.chat( placeholder="type here to chat", ng-model="newText", _onkeyup="doResize()", rows=1, onfocus="typing=true", onblur="typing=false", ng-keypress="enterText($event);")
+    |{{enterTest}}

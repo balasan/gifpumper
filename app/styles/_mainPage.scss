@@ -1,0 +1,139 @@
+
+$cubicEasing: linear;
+// cubic-bezier(0.1, 0.7, 1.0, 0.1);
+
+
+#div3d{
+  position:fixed;
+  overflow:auto;
+}
+
+.pageList{
+  width:70%;
+  margin-top:50px;
+  margin-left:20px;
+  display: inline-block;
+  &.userList{
+    width:60%;
+    margin-left: 450px;
+  }
+  .galleryHeading{
+    position: relative;
+    color:white;
+    font-size: 20px;
+    span{
+      font-size:16px
+    }
+    .btn{
+      cursor:pointer;
+    }
+  }
+}
+.pageItem{
+  width:260px;
+  // float:left;
+  position:relative;
+  // opacity: 0;
+  display:inline-block;
+  vertical-align:middle;
+  // float:left;
+  // .transition(all @cubicEasing 800ms);
+  // .transform(scale(.001));
+  &.loaded{
+    // .transform(scale(1));
+    opacity: 1;
+  }
+  .infoDiv{
+    text-overflow:ellipsis;
+    font-size: 12px;
+    color:white;
+    position:relative;
+    display:block;
+    overflow:hidden;
+  }
+  .pageTitle{
+    font-size: 14px;
+  }
+  .thumbImg{
+    width:100%;
+    height:180px;
+    background-size:cover;
+    background-position:center;
+    // height:auto;
+  }
+  .heartImg{
+    width:20px;
+    height:auto;
+  }
+  .miniButton{
+      float:right;
+      cursor: pointer;
+      user-select: none;      
+  }  
+}
+
+.feed{
+  width:20%;
+  height:auto;
+  color:white;
+  float:left;
+  margin-left:40px;
+  padding-top:10px;
+  margin-top: 40px;
+  font-size: 20px;
+  #feedContainer{
+    margin-top: 5px;
+    padding:20px;
+    border-radius: 3px;
+    background:lightgreen;
+    font-size: 14px;
+    position:relative;
+    display:inline-block;
+    width:100%;
+    .mainNotify{
+      position:relative; 
+      font-size:12px;
+      padding:5px 0;
+      border-bottom:1px grey dotted;
+    }
+    .thumbContainer{
+      width: 60px; 
+      height: 60px; 
+      cursor: pointer; 
+      border-radius: 2px; 
+      overflow: hidden; 
+      float: left; 
+      margin-right: 6px;
+      max-height: 400px;
+    }
+  }
+}
+
+#loadingImg{
+  padding:0px;
+  width:100%;
+  height:100%;
+  position:fixed;
+  display:none;
+  left:0px;
+  top:0px;
+  text-align: center;
+  opacity:.5;
+}
+
+// ELEMENTS
+.element{
+  position:absolute;
+  img{
+    width:100%;
+    height:100%;
+  }
+  .innerElement{
+    width:100%;
+    height:100%; 
+  }
+}
+
+.mediaObj{
+  padding:20px;
+}

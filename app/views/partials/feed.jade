@@ -1,0 +1,13 @@
+|feed
+#feedContainer
+  div.mainNotify( ng-repeat="feedEl in feed" )
+    .thumbContainer.shadow()
+        a(href='profile/{{feedEl.user | encode}}')
+          img(src='{{feedEl.img | profileThumb}}')
+      div(style='text-overflow: ellipsis; overflow: hidden; padding-top: 4px; display: inline-block; width: 70%; min-height: 60px;')
+        span(style='height: 300px; cursor: pointer;')
+          a(href='profile/{{feedEl.user | encode}}') {{feedEl.user}}
+          | 
+        | {{feedEl.action | action}} 
+        span(style='height: 300px; cursor: pointer;')
+          a(href="{{feedEl.page| encode}}{{feedEl.version | version}}") {{feedEl.page}} {{feedEl.version + v | versionText}}

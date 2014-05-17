@@ -1,0 +1,31 @@
+div.galleryHeading pages 
+  span sort by:  
+  span.btn(ng-click="filter = 'created'")
+    |created  
+  span.btn(ng-click="filter = 'likes'")
+    |likes  
+  span.btn(ng-click="filter = 'updated'")
+    |updated  
+div(masonry="{ transitionDuration: 0 }")
+  .pageItem(ng-repeat="page in pagesData")
+    div
+        a(href="{{page.pageName | encode}}")
+          .thumbImg(style="background-image:url({{page | galleryThumb}})")
+      div.infoDiv
+        div.pageTitle
+          a(href="{{page.pageName | encode}}") {{page.pageName}}
+          a
+
+        div(ng-show="userProfile") {{page.owner | owner:userProfile}} 
+
+        div(ng-show="page.created") created {{page.created | timeago}}
+        div(ng-show="page.created") created {{page.created | timeago}}
+
+        div {{page.privacy | privacy}}, {{page.versions.length+1}}v
+        
+        a.miniButton(ng-click="who = !who; $emit('masonry.reload');")
+          | {{page.likes.length}}
+          img.heartImg(src='https://s3.amazonaws.com/gifpumper/ui/heart-03.gif')
+        div.whoLikes(ng-show="who")  
+          div(ng-repeat="user in page.likes")
+            a(href="/profile/{{user | encode}}") {{user}}
