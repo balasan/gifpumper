@@ -1,0 +1,1 @@
+process.env.MONGOLAB_URI = "mongodb://pumper93:sybalasa@ds029797.mongolab.com:29797/gp";
