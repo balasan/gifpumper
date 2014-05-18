@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('gpApp')
+angular.module('gifpumper')
   .controller 'SettingsCtrl', ($scope, User, Auth) ->
     $scope.errors = {}
 

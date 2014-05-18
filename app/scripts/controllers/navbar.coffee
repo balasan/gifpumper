@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('gpApp')
+angular.module('gifpumper')
   .controller 'NavbarCtrl', ($scope, $location, Auth) ->
     $scope.menu = [
       title: 'Home'

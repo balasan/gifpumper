@@ -9,11 +9,7 @@
 
 module.exports = function (grunt) {
 
-  // configurable paths
-  var yeomanConfig = {
-      app: 'gifpumper',
-      dist: 'dist'
-  };
+
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
 
