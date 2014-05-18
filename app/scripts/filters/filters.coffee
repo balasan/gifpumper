@@ -79,9 +79,7 @@ app.filter 'transition', () ->
 
 app.filter 'mainTransform', () ->
   (mt) ->
-      'translateZ('+(if mt.z then mt.z else 0)+ 'px)\ 
-      rotateY('+(if mt.rotY then mt.rotY else 0)+'deg)\ 
-      rotateX('+(if mt.rotX then mt.rotX else 0)+'deg)' 
+      'translateZ('+(if mt.z then mt.z else 0)+ 'px) rotateY('+(if mt.rotY then mt.rotY else 0)+'deg) rotateX('+(if mt.rotX then mt.rotX else 0)+'deg)' 
       # translateZ('+(if mt.z then mt.z else 0)+ 'px)\ 
       # translateX('+(if mt.x then mt.x else 0)+ 'px)'
 

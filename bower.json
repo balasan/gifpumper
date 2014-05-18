@@ -1,5 +1,5 @@
 {
-  "name": "gp",
+  "name": "gifpumper",
   "version": "0.0.0",
   "dependencies": {
     "momentjs": "latest",

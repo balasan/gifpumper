@@ -1,4 +1,6 @@
+"use strict"
 
+# Page Controller 
 app =  angular.module("gifpumper")
 
 
@@ -113,9 +115,6 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
     while b < style.backgroundGradient.length
       body.style.backgroundImage = style.backgroundGradient[b]
       b++
-
-
-
 
 
   $scope.location = $location
