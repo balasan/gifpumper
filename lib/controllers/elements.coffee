@@ -115,9 +115,11 @@ module.exports = (everyone, nowjs) ->
         $set:
           userImage: url
       , (error) ->
-        unless error
-          callback()
-          everyone.now.updateUsrImg username, url
+        # unless error
+          # TODO implement
+          # everyone.now.updateUsrImg username, url
+          
+        callback(error)
 
 
 
@@ -177,53 +179,27 @@ module.exports = (everyone, nowjs) ->
 
 
 
-  everyone.now.setProfileBackground = (userProfile, type, background, callback) ->
+  everyone.now.setProfileBackground = (userProfile, bg, callback) ->
     pageName = "profile___" + userProfile
     if @user.pagePermissions[pageName] is `undefined` or @user.pagePermissions[pageName] > 0 and @user.pagePermissions[pageName] isnt "owner"
       console.log @user.pagePermissions[pageName]
       return
-    if type is "backgroundImage"
       
-      #var background = background;
-      db.userModel.update
-        username: userProfile
-      ,
-        $set:
-          backgroundImage: background
-      , (err) ->
-        unless err
-          callback()
-        
-        #pagesGroup[pageName].now.backgroundResponce(type, background);
-        else
-          console.log err
+    db.userModel.update
+      username: userProfile
+    ,
+      $set:
+        backgroundImage: bg.image ? ""
+        background: bg.color ? ""
+        bgDisplay: bg.display ? ""      
+    , (err) ->
+      unless err
+        callback()
+        nowjs.getGroup(pageName).now.updateBackground bg
+      else
+        console.log err
 
-    if type is "background"
-      db.userModel.update
-        username: userProfile
-      ,
-        $set:
-          background: background
-      , (err) ->
-        unless err
-          callback()
-        
-        #pagesGroup[pageName].now.backgroundResponce(type, background);
-        else
-          console.log err
 
-    else if type is "display"
-      db.userModel.update
-        username: userProfile
-      ,
-        $set:
-          bgDisplay: background
-      , (err) ->
-        unless err
-          console.log background
-          callback()
-        else
-          console.log err
 
 
   #/////////////

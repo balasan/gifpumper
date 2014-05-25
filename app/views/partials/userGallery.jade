@@ -6,25 +6,30 @@ div.galleryHeading pages
     |likes  
   span.btn(ng-click="filter = 'updated'")
     |updated  
-div(masonry="{ transitionDuration: '800ms' }")
-  .pageItem.masonry-brick(ng-repeat="page in pagesData")
+div
+  //- div(masonry="{ transitionDuration: '800ms' }")
+  //- .masonry-brick
+  .pageItem(bindonce='page' ng-repeat="page in pagesData")
     div
-        a(href="/{{page.pageName | encode}}")
-          img.thumbImg(src="{{page | galleryThumb}}")
+        a(thumbnail freeze w="500" h="500" bo-href="'/'+page.pageName | encode")
+          //- .thumbImg(bg-image bg="{{page.thumb}}")
+          img.thumb
       div.infoDiv
         div.pageTitle
-          a(href="/{{page.pageName | encode}}") {{page.pageName}}
-          a
+          a(bo-href="'/' + page.pageName | encode") 
+            span( bo-text="page.pageName")
+          
 
-        div(ng-show="userProfile") {{page.owner | owner:userProfile}} 
+        div(bo-show="userProfile" bo-text="page.owner | owner:userProfile") 
 
-        div {{page.privacy | privacy}}, {{page.versions.length+1}}v
-        
-        div(ng-show="page.created") created {{page.created | timeago}}
-        div(ng-show="page.edited") updated {{page.edited | timeago}}
-        a.miniButton(ng-click="who = !who; $emit('masonry.reload');")
-          | {{page.likes.length}}
-          img.heartImg(src='https://s3.amazonaws.com/gifpumper/ui/heart-03.gif')
-        div.whoLikes(ng-show="who")  
-          div(ng-repeat="user in page.likes")
-            a(href="/profile/{{user | encode}}") {{user}}
+        div
+          span( bo-text="page.privacy | privacy")
+          span( bo-text = "' ' + (page.versions.length+1)+'v'")
+
+        a.miniButton(bo-click="who = !who; $emit('masonry.reload');")
+          span(bo-text="page.likes.length")
+          //- img.heartImg(src='https://s3.amazonaws.com/gifpumper/ui/heart-03.gif')
+        div.whoLikes(bo-show="who")  
+          div( bindonce='user' ng-repeat="user in page.likes")
+            a(bo-href="'/profile/' + user | encode") 
+              span(bo-text="user")

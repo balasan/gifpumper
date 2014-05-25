@@ -18,7 +18,7 @@
     p
   
   #editTextContainer(ng-show="addType=='text'")
-    textarea#addContent.tinymce
+    textarea#addContent(ckeditor="editorOptions" ng-model="text")
   
   #editMediaContainer(ng-show="addType=='media'")
     p
@@ -101,7 +101,7 @@
     
 
   #editTextContainer(ng-show="editType == 'text'")
-    textarea#editContent.editType.tinymce(ng-model="editElement.content")
+    textarea#addContent(ckeditor="editorOptions" ng-model="editElement.content")
   
 
   #editMediaContainer(ng-show="editType == 'media'")

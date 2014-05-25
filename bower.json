@@ -10,8 +10,10 @@
     "angular-cookies": "1.2.11",
     "angular-sanitize": "1.2.11",
     "angular-route": "1.2.11",
-    "angular-masonry": "latest",
-    "font-awesome": "~4.1.0"
+    "font-awesome": "~4.1.0",
+    "angular-bindonce": "~0.3.1",
+    "ng-ckeditor": "~0.2.1",
+    "ckeditor": "~4.4.1"
   },
   "devDependencies": {
     "angular-mocks": "1.2.11",

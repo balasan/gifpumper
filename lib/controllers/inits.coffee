@@ -254,38 +254,22 @@ module.exports = (everyone, nowjs, sessionStore) ->
       else callback err
 
 
+  # TODO make this cleaner
   everyone.now.loadAll = (pageName, userProfile, version, callback) ->
-  
-    # callback ('bla')
-    # return;
+
     #var pagesGroup = {};
     groupName = pageName
     groupName = "profile___" + userProfile  if pageName is "profile"
     
     @user.name is "n00b"
     
-    #groupName='invite';
-    #pageName='invite';
-    # console.log groupName
-    # console.log @user.name
     console.log 'permissions'
     console.log @user.pagePermissions[pageName]
     if @user.pagePermissions[groupName] is `undefined` or (@user.pagePermissions[groupName] is 3 and @user.pagePermissions[groupName] isnt "owner")
       
-      #console.log(this.user.pagePermissions[pageName])
       callback "This page is private"
       return
 
-    # if pageName == 'profile' && userProfile != undefined
-    #   db.userModel.findOne
-    #     username: userProfile
-    #   ,
-    #     password: 0
-    #     salt: 0
-    #   , (error, result) -> 
-    #     unless error
-    #       callback result
-    #   return  
     
     unless version is `undefined`
       sliceParam = [parseInt(version), 1]
@@ -310,7 +294,6 @@ module.exports = (everyone, nowjs, sessionStore) ->
         callback error, null
       else
         
-        #pageName=result.pageName;  
         nowjs.getGroup(groupName).addUser oldthis.user.clientId
         nowjs.getGroup("eyebeam-real-time").addUser oldthis.user.clientId  if oldthis.user.name is "eyebeam"
         
@@ -340,7 +323,7 @@ module.exports = (everyone, nowjs, sessionStore) ->
             oldthis.user.currentPage = null
         oldthis.user.currentPage = groupName
         nowjs.getGroup("main").now.updateFeed oldthis.user.name, oldthis.user.image, groupName, "join"  if result.privacy < 3
-        oldthis.now.updatePageUser "add", nowjs.getGroup(groupName).pageUsers, userProfile
+        oldthis.now.updatePageUser "replace", nowjs.getGroup(groupName).pageUsers, userProfile
         if oldthis.user.name is "n00b"
           userObj = {}
           userObj = n00b: true
@@ -354,11 +337,13 @@ module.exports = (everyone, nowjs, sessionStore) ->
         callback null, result
 
 
+
+
   everyone.now.camera = (transform, animate) ->
     nowjs.getGroup("eyebeam-real-time").now.updateMainDivServer transform, animate  if @user.name is "eyebeam-user"
 
-  db.onlineModel.remove {}, (err) ->
 
+  db.onlineModel.remove {}, (err) ->
 
 
   everyone.now.getAllUsers = (callback) ->
@@ -397,6 +382,8 @@ module.exports = (everyone, nowjs, sessionStore) ->
         clicks: @user.clicks
     , (err) ->
       console.log err  if err
+
+    console.log('LEAVING')
 
     nowjs.getGroup("main").exclude(@user.clientId).now.updateFeed @user.name, @user.name, @user.currentPage, "leave"  unless @user.currentPage is `undefined`
     delete nowjs.getGroup(@user.currentPage).pageUsers[@user.clientId]  unless nowjs.getGroup(@user.currentPage).pageUsers is `undefined`

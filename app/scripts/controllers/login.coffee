@@ -1,7 +1,7 @@
 'use strict'
 
 angular.module('gifpumper')
-  .controller 'LoginCtrl', ($scope, Auth, $location) ->
+  .controller 'LoginCtrl', ($scope, Auth, $rootScope) ->
     $scope.user = {}
     $scope.errors = {}
 
@@ -14,8 +14,8 @@ angular.module('gifpumper')
           password: $scope.user.password
         )
         .then ->
-          # Logged in, redirect to home
-          $location.path '/'
+          $rootScope.loggedIn = true
+
         .catch (err) ->
           err = err.data;
           $scope.errors.other = err.message;

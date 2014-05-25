@@ -8,11 +8,26 @@ $cubicEasing: linear;
   overflow:auto;
 }
 
+// #mainPage{
+
+//   height:100%;
+//   width:100%;
+//   position:absolute;
+//   top:0px;
+//   left:0px;
+//   overflow:auto;
+// }
+.thumb{
+  // text-align:center;
+  width:100%;
+}
 .pageList{
   width:70%;
   margin-top:50px;
   margin-left:20px;
   display: inline-block;
+  // position:relative;
+  // overflow:auto;
   &.userList{
     width:60%;
     margin-left: 450px;

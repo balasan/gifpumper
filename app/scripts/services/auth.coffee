@@ -1,12 +1,12 @@
 'use strict'
 
 angular.module('gifpumper')
-  .factory 'Auth', ($location, $rootScope, Session, User, $cookieStore) ->
+  .factory 'Auth', ($location, $rootScope, Session, User, $cookieStore, nowService) ->
     
     # Get currentUser from cookie
-    $rootScope.currentUser = $cookieStore.get('user') or null
+    $rootScope.currentUser = $cookieStore.get('user') or {name:'n00b'}
     $cookieStore.remove 'user'
-    
+    # $rootScope.currentUser = {name:"n00b"};
     ###
     Authenticate user
     
@@ -14,6 +14,7 @@ angular.module('gifpumper')
     @param  {Function} callback - optional
     @return {Promise}
     ###
+
     login: (user, callback) ->
       cb = callback or angular.noop
       Session.save(
@@ -21,6 +22,8 @@ angular.module('gifpumper')
         password: user.password
       , (user) ->
         $rootScope.currentUser = user
+        nowService.disconnect()
+        nowService.connect()
         cb()
       , (err) ->
         cb err
@@ -36,8 +39,12 @@ angular.module('gifpumper')
     logout: (callback) ->
       cb = callback or angular.noop
       Session.delete(->
-        $rootScope.currentUser = null
+        $rootScope.currentUser = {name:'n00b'}
         cb()
+        $cookieStore.remove 'user'
+        $rootScope.$broadcast('logout')
+        nowService.disconnect()
+        nowService.connect()
       , (err) ->
         cb err
       ).$promise

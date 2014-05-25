@@ -1,28 +1,24 @@
 extends layout
 block content
   <div id="fb-root"></div>
-  #feed.userPages
-        //- div(style="padding:5px;font-size:20px;")
-          //- span.label1(style="z-index:20000")
-            //- |feed:
-        #feedContainer
-
-  div(ng-view='ng-view')
-
+  //- #feed.userPages
+        //- #feedContainer
   div(ng-include="'partials/right-menu'")
 
+  #mainPage(ng-controller="mainPageCtrl" ng-show="showMain")
+    span(save-scroll)
+    div.feed(page-data="pageData" feed infinite ng-controller="feedCtrl" )
+    div.pageList( gallery, infinite, ng-controller="galleryCtrl" )
+      
+    div(ng-include="'partials/chat'")  
+    //- div(ng-include="'partials/left-menu'")  
 
-  //- #userPages.userPages
-  //-   div(style="padding:5px;font-size:20px;")
-  //-     span.label1(style="z-index:20000")
-  //-       //- |pages:  
-  //-   #pagesListProfile
-  //-   #pagesList
-  //-     #mainFeedDiv.userPages.pageItem
-  //-       //- div(style="padding:5px;font-size:20px;")
-  //-         //- span.label1(style="z-index:20000")
-  //-           //- |active pages:
-  //-       #activeNow
+
+
+  div(ng-view='ng-view' autoscroll="false")
+
+
+
 
   #loadingImg(ng-hide="true")
     img(src="http://dump.fm/images/20110501/1304306298412-dumpfm-GucciSoFlosy-loading3.gif")
@@ -117,15 +113,8 @@ block content
 
 
 
-  ////page settings/////
-
-
-
 
   #saveMenu.uiClosed(style='left:400px; top:100px;')
-    //|Save page in this site:
-    //br
-    //input#sightName(style='width:155px;', type='text', name='siteName', value='', size='32', maxlength='32', onfocus="typing=true", onblur="typing=false")
     br
     |Version Name:
     br
@@ -136,21 +125,8 @@ block content
       a(href='javascript:openMenu(\'saveMenu\');') x
 
 
-  //input#console1(class='console1',id='console1', style='background-color:white; width:100%; top:0px; left:0px; margin-left:5px; margin-right:5px; z-index:999;', type='text', value='', size='100')
-
-  //#topBar(style="position:fixed;top:0px;left:0;width:100%;height:26px;background:rgba(255,255,255,.5);")
 
 
-      //- &nbsp   
-      //-else
-      //  a(href='/') GIFPUMPER.COM
-      //pageInfoDiv(style="float:right")     
-
-
-
-
-  #profileContainer.shadow
-    div(style="position:absolute;bottom:-15px;right:5px;font-size:13")
 
 
   #prevVersionDiv.shadow.twoD(style="display:none;z-index:1000;top:50%;left:0px;position:fixed;")
@@ -160,10 +136,7 @@ block content
        a(href="javascript:goToPage(pageData.pageName, null, nextVersion)")
          img(src="https://s3.amazonaws.com/gifpumper/ui/arrow-right.gif")   	  
 
-  //#whoLikes(style="display:none;padding:5px; position:relative;font-size:12px")
-  //- .x
-  //-   a(href='javascript:$(\'#whoLikes\').hide();') x
-   
+
 
   #alertDiv(style="padding:10px;background:white;display:none")
 

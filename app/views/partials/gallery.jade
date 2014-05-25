@@ -6,26 +6,33 @@ div.galleryHeading pages
     |likes  
   span.btn(ng-click="filter = 'updated'")
     |updated  
-div(masonry="{ transitionDuration: 0 }")
-  .pageItem(ng-repeat="page in pagesData")
+//- div(masonry="{ transitionDuration: '400ms' }")
+div
+  //- .masonry-brick
+  .pageItem(bindonce='page' ng-repeat="page in pagesData track by $index")
     div
-        a(href="{{page.pageName | encode}}")
-          .thumbImg(style="background-image:url({{page | galleryThumb}})")
+        a(thumbnail freeze w="600" h="600" bo-href="'/'+page.pageName | encode")
+          //- .thumbImg(bg-image bg="{{page.thumb}}")
+          img.thumb
       div.infoDiv
         div.pageTitle
-          a(href="{{page.pageName | encode}}") {{page.pageName}}
-          a
+          a(bo-href="'/'+page.pageName | encode") {{page.pageName}}
 
-        div(ng-show="userProfile") {{page.owner | owner:userProfile}} 
+        div(bo-show="userProfile" ng-text='page.owner | owner:userProfile') 
 
-        div(ng-show="page.created") created {{page.created | timeago}}
-        div(ng-show="page.created") created {{page.created | timeago}}
+        div(bo-text="'created  '+ page.created")  
+          //- span( bo-text="page.created" )
+        //- div(ng-show="page.created" ) edited 
+          //- span(timeago date="{{page.edited}}") 
 
-        div {{page.privacy | privacy}}, {{page.versions.length+1}}v
-        
-        a.miniButton(ng-click="who = !who; $emit('masonry.reload');")
-          | {{page.likes.length}}
-          img.heartImg(src='https://s3.amazonaws.com/gifpumper/ui/heart-03.gif')
-        div.whoLikes(ng-show="who")  
-          div(ng-repeat="user in page.likes")
-            a(href="/profile/{{user | encode}}") {{user}}
+        div
+          span( bo-text="page.privacy | privacy")
+          span( bo-text = "' ' + (page.versions.length+1)+'v'")
+
+        a.miniButton(bo-click="who = !who; $emit('masonry.reload');")
+          span(bo-text="page.likes.length")
+          //- img.heartImg(src='https://s3.amazonaws.com/gifpumper/ui/heart-03.gif')
+        div.whoLikes(bo-show="who")  
+          div( bindonce='user' ng-repeat="user in page.likes")
+            a(bo-href="'/profile/' + user | encode") 
+              span(bo-text="user")

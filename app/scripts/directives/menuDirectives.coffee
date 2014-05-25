@@ -26,7 +26,7 @@ app.directive "editMenu", ($document,$filter)->
           scope.editElement.contentType = 'mp3Url'
         else
           scope.editElement.contentType = ''
-      angular.element( document.getElementById(scope.editElement._id)).scope().editElement()
+      angular.element( document.getElementById(scope.editElement._id)).scope().editElementFn()
       
 
 
@@ -119,7 +119,7 @@ app.directive "addMenu", ($document)->
           else
             addObject.content = scope.customMedia
           number = 1
-        else addObject.content = $("#addContent").val()  if scope.addType is "text"
+        else addObject.content = scope.text  if scope.addType is "text"
         if scope.addType is "div"
           addObject.backgroundColor = scope.divColor
           addObject.backgroundImage = scope.divBackground

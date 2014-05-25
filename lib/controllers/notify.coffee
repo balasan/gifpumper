@@ -32,9 +32,10 @@ module.exports = (everyone, nowjs)->
         owner = _owner
       else
         owner = images[i].user
-      continue  if user is owner
+      if user is owner
+        i=images.length
       if !owner or !contributors[owner] 
-        continue
+        i=images.length
       else
         contributors[owner] = 1
       userModel.findOne

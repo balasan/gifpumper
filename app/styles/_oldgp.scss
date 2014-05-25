@@ -646,43 +646,8 @@ input[type="password"]{
     background-color: #eee;
 }
 
-.notifyBox{
 
-  background-color:rgba(255,0,100,1);
-/*  background-image:url('http://www.sitevip.net/gifs/stars/ZSTAR_animado.gif'); */
-/*  background-size:20px 20px; */
-/*  position:relative; */
-  display:inline;
-  width:10px;
-  height:10px;
-  color:white;
-  border-radius: 2px;
-/*  padding:2px 4px 2px 4px; */
-/*  width:auto; */
-  margin:2px;
-  margin-right:4px;
-  
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -o-user-select: none;
-  user-select: none;
 
-    cursor: pointer;
-  
-}
-
-#notifyDiv{
-  padding:10px 4px 10px 0px;
-  display:none;
-  position:fixed;
-  color:grey;
-  max-height:300px;
-  overflow:auto;
-  width:250px;
-  color:grey;
-
-}
 
 #pageName{
   padding:2px;

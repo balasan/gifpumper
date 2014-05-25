@@ -3,7 +3,7 @@
   position:fixed; 
   top:5px; 
   right:160px; 
-  opacity:.8; 
+  opacity:1; 
   padding:0;
   .innerMenu{
     float:left;
@@ -18,11 +18,33 @@
   .logInOut{
     float:left
   }
-  .notifyBox{
+  #notifyBox{
     background-color: rgb(102, 204, 255);
-    box-shadow: rgba(60, 60, 60, 0.6) 7.55px -2.45px 5.953176673004086px;
-    -webkit-box-shadow: rgba(60, 60, 60, 0.6) 7.55px -2.45px 5.953176673004086px;
+    @include box-shadow(rgba(60, 60, 60, 0.6) 7.55px -2.45px 5.953176673004086px);
     padding: 3px 5px;
+    display:inline;
+    width:10px;
+    height:10px;
+    color:white;
+    border-radius: 2px;
+    margin:2px;
+    margin-right:4px;
+    user-select: none;
+    cursor: pointer;
+  }
+  #notifyDiv{
+    background-color:white;
+    padding:20px 10px;
+    position:fixed;
+    color:rgb(50,50,50);
+    max-height:400px;
+    overflow:auto;
+    width:250px;
+    border-radius:3px;
+    border: 1px dotted green;
+    .thumbContainer{
+      margin-right:7px;
+    }
   }
 }
 
@@ -38,7 +60,7 @@
   cursor:moveable
 }
 
-#chat{
+.chatOuter{
   border: 1px solid;
   border-color:grey;
   @include transform(translateZ(10000px));

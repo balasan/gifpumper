@@ -1,0 +1,26 @@
+#userImage{
+  position:relative;
+  img{
+    z-index: 100; 
+    width: 100%; 
+    height: auto;
+  }
+  .userEdit{
+    position:absolute;
+    top:0px;
+    right:0px;
+    font-size:16px;
+    padding:5px;
+    width:25px;
+    background:darkgrey;
+    border-radius:3px;
+    text-align:center;
+    opacity:0;
+  }
+  &:hover{
+     .userEdit{
+      opacity:1
+     }
+  }
+}
+

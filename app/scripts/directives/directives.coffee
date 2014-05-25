@@ -3,6 +3,10 @@
 # Directives 
 app = angular.module("gifpumper")
 
+
+
+
+
 app.directive "randColor", ()->
   link:(scope,el,att)->
     bgcolorlist = new Array("rgba(0,72,234,1)", "rgba(96,0,234,1)", "rgba(114,34,0,1)", "rgba(102,129,135,1)", "rgba(102,204,255,1)", "rgba(252,255,0,1)", "rgba(194,127,255,1)", "rgba(0,95,21,1)", "rgba(255,0,170,1)", "rgba(249,6,6,1)", "rgba(173,216,230,1)", "rgba(40,40,40,1)", "rgba(40,40,40,1)")
@@ -10,6 +14,27 @@ app.directive "randColor", ()->
     color = bgcolorlist[Math.floor(r * bgcolorlist.length)]
     el.css 
       background: color 
+
+
+app.directive "notify", ($timeout) ->
+  link:(scope,el,att)->
+    notify = angular.element(document.getElementById('notifyBox'))
+    el.css
+      'margin-left': - el[0].offsetWidth+notify[0].offsetWidth+'px'
+
+app.directive "bgImage", ($timeout) ->
+  link:(scope,el,att)->
+    el.css
+      backgroundImage: 'url('+att.bg+')'
+
+# app.directive 'timeago', ($timeout)->
+#   link:(scope,el,att)->
+#     $timeout ()->
+#       # if(att.date!="")
+#       #   date = moment(att.date).fromNow();
+#       # else
+#       #   date = "a while ago"
+#       el.html(att.date)
 
 
 
@@ -25,7 +50,7 @@ app.directive "chatbox", ($timeout) ->
     scope.toBottom = ()->
       el[0].scrollTop = el[0].scrollHeight;
     scope.$watch 'pageData.text.length', ()->
-      $timeout scope.toBottom;
+      scope.toBottom;
 
 
 app.directive "element", ($document, $rootScope, $timeout) ->
@@ -45,8 +70,8 @@ app.directive "element", ($document, $rootScope, $timeout) ->
 
     okToDeselect = false;
 
-    el.on 'mousedown', (e) ->
 
+    mouseDownHandler = (e) ->
       if e.ctrlKey || e.button > 1
         return;
 
@@ -54,7 +79,8 @@ app.directive "element", ($document, $rootScope, $timeout) ->
         okToDeselect = false;
       $rootScope.selected = scope.el._id
 
-      elWidth = el.width(); elHeight = el.height()
+      elWidth = el[0].offsetWidth 
+      elHeight = el[0].offsetHeight
       elX = parseInt(scope.el.left); elY = parseInt(scope.el.top); elZ = scope.el.z
       angleX = scope.el.anglex; angleY = scope.el.angley; angleZ = scope.el.angler
 
@@ -75,12 +101,15 @@ app.directive "element", ($document, $rootScope, $timeout) ->
 
       $timeout( ()->
         okToDeselect = true;
+        return null
       ,100);
 
       scope.$apply();
 
       # $document.on 'mouseup', ()->
       #   deselect()
+
+    el.on 'mousedown', mouseDownHandler
 
 
     deselect = (e) ->
@@ -159,13 +188,14 @@ app.directive "element", ($document, $rootScope, $timeout) ->
       # scope.$apply();
 
       scope.transform = 'move'
-      scope.editElement()
+      scope.editElementFn()
       stopTimer()
 
     startTimer = ()->
       okToUpdate = true
       updateTimer = setInterval( ()->
         okToUpdate = true
+        return null
       ,30)
     stopTimer = ()->
       clearTimeout(updateTimer);
@@ -180,6 +210,8 @@ app.directive "element", ($document, $rootScope, $timeout) ->
 
     scope.$on '$destroy', ()->
       $document.unbind "mousedown", deselect
+      $document.unbind "mouseup", mouseupHandler
+      el.unbind 'mousedown' 
       el.remove();
 
 
@@ -229,27 +261,26 @@ app.directive "page", ($document, $window)->
       #   rY=xRot*30
 
 
-
     $document.on 'keydown', (e) ->
       switch e.which
         when 90 then scope.keys.z = true
         when 88 then scope.keys.x = true
         when 32  
           scope.keys.space = !scope.keys.space
-          e.originalEvent.preventDefault()
+          e.preventDefault()
         when 17 then scope.keys.cntrl = true
         when 38  
           tz +=  80
           # tz += Math.cos(scope.mt.rotY*Math.PI/180) * 100
           # tx -= Math.sin(scope.mt.rotY*Math.PI/180) * 100
-          e.originalEvent.preventDefault()
+          # e.preventDefault()
         when 40  
           tz -=  80
           # tz -= Math.cos(scope.mt.rotY*Math.PI/180) * 80
           # tx += Math.sin(scope.mt.rotY*Math.PI/180) * 80          
-          e.originalEvent.preventDefault()
-        when 37 then rY -=20; e.originalEvent.preventDefault()
-        when 39 then rY +=20; e.originalEvent.preventDefault()
+          # e.preventDeorfault()
+        when 37 then rY -=20
+        when 39 then rY +=20
     $document.on 'keyup', (e) ->
       switch e.which
         when 90 then scope.keys.z = false
@@ -260,7 +291,6 @@ app.directive "page", ($document, $window)->
     scope.$on '$destroy', () ->
       $document.unbind 'keydown'    
       $document.unbind 'keyup'    
-
 
 
 
@@ -288,7 +318,10 @@ app.directive "soundcloud", ($timeout,$http) ->
         ).then (result) ->
                   scope.el.content=result.data.html; 
     $timeout(()->
-      element.children().width('100%').height('100%')
+      element.children().css
+        width:'100%'
+        height:'100%'
+      return null
     ,4000)
 
 
@@ -299,16 +332,24 @@ app.directive "infinite",  ($window)->
       scrollDistance = 100
       $$window = angular.element(window);
       $$window.on 'scroll', (event) ->
+        check(event)
+
+      # TODO all? or one?
+      check = (event)->
         if scope.scroll
-          windowBottom = $$window.innerHeight() + $$window.scrollTop()
-          elementBottom = el[0].offsetTop + el.innerHeight()
+          doc = document.documentElement;
+          offsetTop = ($window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+          windowBottom = $window.innerHeight + offsetTop
+          # windowBottom = el.parent()[0].offsetTop + el.parent()[0].offsetHeight
+
+          elementBottom = el[0].offsetTop + el[0].offsetHeight
           remaining = elementBottom - windowBottom
-          if remaining <= scrollDistance
+          if remaining <= scrollDistance && elementBottom > 0
             scope.scroll = false
             scope.getNextPage()
-      # TODO all? or one?
+
       scope.$on '$destroy', () ->
-        $$window.unbind 'scroll'
+        # $$window.unbind 'scroll'
 
 
 
@@ -316,8 +357,57 @@ app.directive "feed", ()->
   templateUrl: '/partials/feed'
 
 
+app.directive "saveScroll", ($window, $timeout)->
+  link:(scope, el, att) ->
+
+    scope.$watch 'showMain', (newP, oldP)->
+      if newP == true
+        $timeout ->
+          window.scroll(0, scope.scroll)
+          return
+        ,10
+      else
+        doc = document.documentElement;
+        scroll = ($window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+        # angular.element($window).unbind 'scroll', resetWindow
+        scope.saveScroll(scroll)
+
+    # resetWindow = ()->
+    #   angular.element(document.body).css
+    #     height: '100%'
+
+    # $timeout ()->
+    #   if scope.scroll
+    #     # angular.element(document.body).scrollTop(scope.scroll)
+    #     # angular.element(document.html).scrollTop(scope.scroll)
+
+    #     # TODO fix auto scroll
+    #     angular.element(document.body).css
+    #       height: scope.scroll + 1000 + 'px'
+
+    #       window.scroll(0, scope.scroll)
+    #       window.scrollTo(0, scope.scroll)
+
+    #     angular.element($window).on 'scroll', resetWindow
+
+
+    #     # angular.element($window).scrollTop(scope.scroll)
+    #     # scope.$apply()
+    #   return null
+
+    # , 30
+
+    # scope.$on '$destroy', () ->
+    #   if scope.pageName == 'main'
+    #     doc = document.documentElement;
+    #     scroll = ($window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+    #     angular.element($window).unbind 'scroll', resetWindow
+    #     scope.saveScroll(scroll)
+
 app.directive "gallery", ($window)->
   templateUrl: '/partials/gallery'
+
+
 
 
 app.directive "appVersion", (version) ->

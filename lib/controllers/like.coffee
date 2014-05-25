@@ -35,12 +35,15 @@ module.exports = (everyone, nowjs) ->
       return
     pageName = @user.currentPage
     if action is "like"
-      if version is `undefined`
+      if version is null
         ver = 0
       else
         ver = {}
-        ver["$slice"] = [version, 1]
-      if version is `undefined`
+        ver["$slice"] = [
+          version
+          1
+        ]
+      if version is null
         pageModel.findOne
           pageName: pageName
           likes:
@@ -63,14 +66,16 @@ module.exports = (everyone, nowjs) ->
                 likesN: 1
             , (err) ->
               console.log err  if err
+              return
 
-            callback null
+            callback null, action
             notifyUsers result.images, result.owner, oldthis.user.name, oldthis.user.image, "like", pageName
             everyone.now.updateMain()
           else
             callback err
+          return
 
-      unless version is `undefined`
+      unless version is null
         query = {}
         query["versions." + version + ".likes"] = $nin: [@user.name]
         query["pageName"] = pageName
@@ -94,19 +99,39 @@ module.exports = (everyone, nowjs) ->
                 "versions.$.likesN": 1
             , (err) ->
               console.log err  if err
+              return
 
-            callback null
+            callback null, action
             notifyUsers result.versions[0].images, result.owner, oldthis.user.name, oldthis.user.image, "like", pageName, version
             everyone.now.updateMain()
           else
             callback err
+          return
 
     else if action is "unlike"
-      unless version is `undefined`
+      if version is null
+        pageModel.update
+          pageName: pageName
+        ,
+          $pull:
+            likes: @user.name
+
+          $inc:
+            likesN: -1
+        , (err) ->
+          unless err
+            callback null, action
+          else
+            callback err
+          return
+
+      else
         pullObj = {}
         pullObj["versions." + version + ".likes"] = @user.name
         pullObj2 = {}
         pullObj2["versions." + version + ".likesN"] = -1
+        
+        #console.log(pullObj2);
         pageModel.update
           pageName: pageName
           "versions.currentVersion": version
@@ -119,9 +144,14 @@ module.exports = (everyone, nowjs) ->
             likesN: -1
         , (err) ->
           unless err
-            callback null
+            
+            #everyone.now.updateMain()
+            callback null, action
           else
             callback err
+          return
+
+    return
 
 
 

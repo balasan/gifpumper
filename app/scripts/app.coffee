@@ -5,13 +5,16 @@ angular.module('gifpumper', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
-  "wu.masonry"
+  # "wu.masonry",
+  "ngCkeditor",
+  'pasvaz.bindonce'
 ])
+  .value('$anchorScroll', angular.noop)
   .config ($routeProvider, $locationProvider, $httpProvider) ->
     $routeProvider
-      .when "/",
-        templateUrl: "partials/index"
-        controller: 'pageCtrl'
+      # .when "/",
+      #   templateUrl: "partials/index"
+      #   controller: 'pageCtrl'
 
       .when "/profile/:userName",
         templateUrl: "partials/user"
@@ -35,6 +38,7 @@ angular.module('gifpumper', [
         redirectTo: '/'
 
     $locationProvider.html5Mode true
+
   
     # Intercept 401s and redirect you to login
     # $httpProvider.interceptors.push ['$q', '$location', ($q, $location) ->

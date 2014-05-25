@@ -10,7 +10,12 @@ app.factory 'nowService', ($rootScope)->
       return
     now.updateMain = ()->
       return
-  
+  disconnect : ->
+    now.core.socketio.socket.disconnect()
+
+  connect : ->
+    now.core.socketio.socket.connect()
+
   on : (eventName, callback)->
     now[eventName] = ()->
       args = arguments
@@ -35,28 +40,44 @@ app.factory 'elService', ()->
     now.deleteElement(pageName, element._id, false)
 
 
-app.factory 'currentUser', (nowService) ->
+app.factory 'currentUser', (nowService, $http) ->
   currentUser = 'n00b'
 
-  nowService.on 'notifyUser', (notify,newN)->
-    console.log notify
 
+  # nowService.on 'notifyUser', (notify,newN)->
+  #   console.log notify
 
   on : nowService.on
   
-
   getCurrentUser : (callback)->
     now.ready ->
       now.currentUser (username) ->
         callback(username)
 
 
-app.factory('userService', ($q, $rootScope)-> 
+
+
+
+
+app.factory('userService', ($q, $rootScope, nowService, $filter)-> 
   page = 0
   number = 20
   data = []
   filter = 'created'
   user = null
+
+  on : nowService.on
+
+  updateUserPic : (user, url, callback)->
+    now.ready ->
+      now.updateUserPic user, url, (err)->
+        callback(err)
+
+  setBackground : (pageName,bg)->
+    now.ready ->
+      now.setProfileBackground pageName, bg, (err)->
+        if err 
+          alert(err)
 
   switchFilter : (_filter) ->
     filter = _filter
@@ -84,18 +105,35 @@ app.factory('userService', ($q, $rootScope)->
     now.ready ->
       now.loadUserPages user, page, number,  filter, (err,result) ->
         page++;
+        result = $filter('timeAgo')(result)
+        # result = $filter('galleryThumb')(result)
         data = data.concat(result)
         $rootScope.$apply(deferred.resolve(data))
     deferred.promise;
 )
 
-app.factory('galleryService', ($q, $rootScope, nowService)-> 
+app.factory  'pageCache', ()->
+  pages=[]
+  pageScroll=[]
+  getPage : (pageName)->
+     pages[pageName]
+  savePage: (pageName, data)->
+    pages[pageName] = data
+  saveScroll : (pageName, scroll)->
+    pageScroll[pageName] = scroll
+  getScroll : (pageName)->
+    pageScroll[pageName]
+
+
+app.factory 'galleryService', ($q, $rootScope, nowService, $filter)-> 
   page = 0
-  number = 20
+  number = 40
   data = []
   filter = 'created'
 
-  nowService.on 'updateMain', (page, action, $filter)->
+
+
+  nowService.on 'updateMain', (page, action, filter)->
     if action == 'add'
       if filter == 'created' || filter == 'edited'
         data.unshift(page)
@@ -104,6 +142,8 @@ app.factory('galleryService', ($q, $rootScope, nowService)->
         if p.pageName == page 
           data.splice(i,1)
           return
+
+ 
 
   switchFilter : (_filter) ->
     filter = _filter
@@ -114,20 +154,23 @@ app.factory('galleryService', ($q, $rootScope, nowService)->
     data : data
     filter : filter
 
+
   getNextPage : () ->
     deferred = $q.defer();
     now.ready ->
       now.loadMainPage page, number, filter, (result) ->
         page++;
+        result = $filter('timeAgo')(result)
+        # result = $filter('galleryThumb')(result)
         data = data.concat(result)
         $rootScope.$apply(deferred.resolve(data))
     deferred.promise;
-)
+
 
 app.factory('feed', ($q, $rootScope, nowService)-> 
   
   page = 0
-  number = 20
+  number = 40
   data = []
   filter = ""
 
@@ -135,7 +178,7 @@ app.factory('feed', ($q, $rootScope, nowService)->
 
   nowService.on "notifyFeed", (notify)->
     data = notify.concat(data)
-    console.log(notify)
+    # console.log(notify)
 
   getData : ()->
     data
@@ -155,6 +198,12 @@ app.factory('pageService', ($q, $rootScope, nowService)->
   on : nowService.on
   # now.newElement = (elArray)->
     # $rootScope.updateElement(elArray)
+
+  likePage : (action, version, callback)->
+    now.ready -> 
+      now.likePage action, version, (err, action)->
+        callback(err, action)
+
 
   setPrivacy : (pageName, privacy, editors, callback)->
     now.ready ->
@@ -185,10 +234,6 @@ app.factory('pageService', ($q, $rootScope, nowService)->
 
   getData : (pageName,userProfile,version)->
     permissins = 0
-    
-    # now.updatePageUser = (action,user) ->
-    #   console.log (action + " " + user)
-    #   console.log (user)
 
     now.updateFeed =(user, image, page, action) ->
       console.log (user) 
