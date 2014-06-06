@@ -1,7 +1,7 @@
 'use strict'
 
 angular.module('gifpumper')
-  .controller 'SignupCtrl', ($scope, Auth, $location) ->
+  .controller 'SignupCtrl', ($scope, Auth, $location,nowService,$rootScope) ->
     $scope.user = {}
     $scope.errors = {}
     
@@ -10,12 +10,12 @@ angular.module('gifpumper')
 
       if form.$valid
         Auth.createUser(
-          name: $scope.user.name
+          username: $scope.user.name
           email: $scope.user.email
-          password: $scope.user.password
+          pass: $scope.user.password
         ).then( ->
           # Account created, redirect to home
-          $location.path '/'
+          $location.path '/profile/'+$rootScope.currentUser.name
         ).catch( (err) ->
           err = err.data
           $scope.errors = {}

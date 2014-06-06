@@ -60,71 +60,70 @@ app.directive "addMenu", ($document)->
       elArray = []
       i = 0
 
-      while i < number
-        addObject = {}
-        addObject.d2d = is2d
-        
-        #TODO RESET RADIOS!
-        addObject.top = Math.random() * 500 + scrollTop + "px"
-        addObject.left = -scope.mt.x + Math.random() * 900 + scrollLeft + "px"
-        if scope.addType is "div" or scope.addType is "text"
-          addObject.height = "300px"
-          addObject.width = "400px"
-        else
-          addObject.height = "auto"
-          addObject.width = "auto"
-        addObject.z = Math.random() * 50 - scope.mt.z
-        
-        #addObject.left +=mainDivTrasfrom.x
-        addObject.angler = 0
-        addObject.anglex = -scope.mt.rotY
-        addObject.angley = 0
-        if scope.geoPreset is "hPlane"
-          addObject.angley = 90
-          addObject.height = "1000px"
-          addObject.width = "1000px"
-          addObject.z = -500
-        else if scope.geoPreset is "vPlane"
-          addObject.anglex = 90
-          addObject.width = "1000px"
-          addObject.height = "1000px"
-          addObject.z = -500
-        
-        scope.geoPreset = false
+      addObject = {}
+      addObject.d2d = is2d
+      
+      #TODO RESET RADIOS!
+      addObject.top = Math.random() * 500 + scrollTop + "px"
+      addObject.left = -scope.mt.x + Math.random() * 900 + scrollLeft + "px"
+      if scope.addType is "div" or scope.addType is "text"
+        addObject.height = "300px"
+        addObject.width = "400px"
+      else
+        addObject.height = "auto"
+        addObject.width = "auto"
+      addObject.z = Math.random() * 50 - scope.mt.z
+      
+      #addObject.left +=mainDivTrasfrom.x
+      addObject.angler = 0
+      addObject.anglex = -scope.mt.rotY
+      addObject.angley = 0
+      if scope.geoPreset is "hPlane"
+        addObject.angley = 90
+        addObject.height = "1000px"
+        addObject.width = "1000px"
+        addObject.z = -500
+      else if scope.geoPreset is "vPlane"
+        addObject.anglex = 90
+        addObject.width = "1000px"
+        addObject.height = "1000px"
+        addObject.z = -500
+      
+      scope.geoPreset = false
 
-        addObject.contentType = scope.addType
-        if scope.addType is "image"
-          addObject.url = imgUrl
-        else if scope.addType is "media"
-          if scope.youtubeUrl && scope.youtubeUrl != ""
-            addObject.content = scope.youtubeUrl
-            addObject.contentType = "youtube"
-            addObject.width = "450px"
-            addObject.height = "300px"
-          else if scope.soundcloudUrl && scope.soundcloudUrl != ""
-            addObject.content = scope.soundcloudUrl
-            addObject.contentType = "soundCloud"
-            addObject.width = "300px"
-            addObject.height = "81px"
-          else if scope.vimeoUrl && scope.vimeoUrl != ""
-            addObject.content = scope.vimeoUrl
-            addObject.contentType = "vimeo"
-            addObject.width = "450px"
-            addObject.height = "300px"
-          else if scope.mp3Url && scope.mp3Url != ""
-            addObject.content = mp3Url
-            addObject.contentType = "mp3"
-            addObject.width = "450px"
-            addObject.height = "300px"
-          else
-            addObject.content = scope.customMedia
-          number = 1
-        else addObject.content = scope.text  if scope.addType is "text"
-        if scope.addType is "div"
-          addObject.backgroundColor = scope.divColor
-          addObject.backgroundImage = scope.divBackground
-          number = 1
-        elArray.push addObject
-        i++
+      addObject.contentType = scope.addType
+      if scope.addType is "image"
+        addObject.url = imgUrl
+      else if scope.addType is "media"
+        if scope.youtubeUrl && scope.youtubeUrl != ""
+          addObject.content = scope.youtubeUrl
+          addObject.contentType = "youtube"
+          addObject.width = "450px"
+          addObject.height = "300px"
+        else if scope.soundcloudUrl && scope.soundcloudUrl != ""
+          addObject.content = scope.soundcloudUrl
+          addObject.contentType = "soundCloud"
+          addObject.width = "300px"
+          addObject.height = "81px"
+        else if scope.vimeoUrl && scope.vimeoUrl != ""
+          addObject.content = scope.vimeoUrl
+          addObject.contentType = "vimeo"
+          addObject.width = "450px"
+          addObject.height = "300px"
+        else if scope.mp3Url && scope.mp3Url != ""
+          addObject.content = mp3Url
+          addObject.contentType = "mp3"
+          addObject.width = "450px"
+          addObject.height = "300px"
+        else
+          addObject.content = scope.customMedia
+        number = 1
+      else addObject.content = scope.text  if scope.addType is "text"
+      if scope.addType is "div"
+        addObject.backgroundColor = scope.divColor
+        addObject.backgroundImage = scope.divBackground
+        number = 1
+      elArray.push addObject
+
       scope.addNewImgCtrl elArray
      

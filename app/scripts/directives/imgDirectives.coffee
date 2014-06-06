@@ -3,6 +3,51 @@
 # Directives 
 app = angular.module("gifpumper")
 
+app.directive "crop", ($timeout)->
+  link:(scope,el,att)->
+
+    img = el.find('img')
+
+    img.on 'load', ()->
+
+      c = el.find('canvas')
+      if c[0] 
+        width = c[0].offsetWidth  
+        height = c[0].offsetHeight
+        myEl = c
+      else
+        width = img[0].offsetWidth
+        height = img[0].offsetHeight
+        myEl = img
+
+      pw = el[0].offsetWidth
+      ph = el[0].offsetHeight
+
+      if height < ph 
+                
+        c.css
+          height:'100%'
+          width: 'auto'
+        img.css
+          height:'100%'
+          width: 'auto'
+        margin = myEl[0].offsetWidth - width
+
+        img.css
+          'margin-left' : -margin/2 +'px'
+        c.css 
+          'margin-left' : -margin/2 + 'px'
+
+      else 
+        margin = height - ph
+        img.css
+          'marginTop' : -margin/2 + 'px'
+        c.css 
+          'marginTop' : -margin/2 + 'px'
+
+
+
+
 
 
 app.directive "thumbnail", ($filter)->
@@ -45,6 +90,10 @@ app.directive "thumbnail", ($filter)->
 
     scope.$on '$destroy', ()->
       img.unbind 'error'
+
+
+
+
 
 app.directive "freeze", ($filter, $timeout)->
   link:(scope,el,att)->

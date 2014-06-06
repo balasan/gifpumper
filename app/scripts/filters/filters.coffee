@@ -145,11 +145,12 @@ app.filter 'freezeGif', ()->
     # try
     #   i.src = c.toDataURL("image/gif") # if possible, retain all css aspects
     # catch e # cross-domain -- mimic original with all its tag attributes
-    #   j = 0
-    #   a = undefined
-    #   while a = i.attributes[j]
-    #     c.setAttribute a.name, a.value  if a.name is "style"
-    #     j++
+    j = 0
+    a = undefined
+
+    while a = i.attributes[j]
+      c.setAttribute a.name, a.value  if a.name is "style"
+      j++
       # i.parentNode.replaceChild c, i
     return c
 

@@ -11,7 +11,8 @@
     "jade": "~1.2.0",
     "now": "~0.8.1",
     "connect-coffee-script": "~0.1.6",
-    "coffee-script": "~1.7.1"
+    "coffee-script": "~1.7.1",
+    "aws-sdk": "~2.0.0-rc.19"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

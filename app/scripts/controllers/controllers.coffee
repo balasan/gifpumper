@@ -5,6 +5,10 @@
 app =  angular.module("gifpumper")
 
 
+app.controller "spaceCtrl" , ($scope, $rootScope)->
+  $rootScope.edit = false;
+
+
 
 app.controller "chatCtrl" , ($scope, nowService)->
   $scope.enterTest='adsfkajdfa'
@@ -109,9 +113,13 @@ app.controller "mainCtrl",($scope, currentUser,$rootScope, Auth, $filter) ->
 
 
 app.controller "onlineCtrl", ($scope, currentUser, $rootScope)->
-  $scope.onlineUsers={}
+  
+  # $scope.onlineUsers=currentUser.getOnlineUsers.onlineUsers
+  # $scope.noobs = currentUser.getOnlineUsers.noobs
 
-  $scope.noobs = 0
+  $scope.onlineUsers={}
+  $scope.noobs =0
+
 
   currentUser.on 'updatePageUser', (action, users) ->
     if action == 'replace'
@@ -125,17 +133,17 @@ app.controller "onlineCtrl", ($scope, currentUser, $rootScope)->
         $scope.noobs--
     else
       for key, group of users
-        for user of group
-          if user == 'n00b'
+        for i, user of group
+          if i == 'n00b'
             $scope.noobs++
           else if !$scope.onlineUsers[user]
-            $scope.onlineUsers[user] = user
+            $scope.onlineUsers[user.name] = user
 
 
 
-    $scope.$on 'logout', ()->
-      $scope.onlineUsers={}
- 
+  $scope.$on 'logout', ()->
+    $scope.onlineUsers={}
+
 
   # $rootScope.clearUsers = ()->
     # $scope.onlineUsers={}
@@ -190,22 +198,24 @@ app.controller "userCtrl", ($scope, userService,$routeParams, $filter, pageServi
     udpateBackground()
 
 
-  body = document.body
+  bg = document.getElementById('background')
   udpateBackground=(clear)->
     if clear 
-      body.style.backgroundColor = ""
-      body.style.backgroundImage = ""
+      bg.style.backgroundColor = ""
+      bg.style.backgroundImage = ""
       return
     style= $filter('bgFilter')($scope.userData)
-    body.style.backgroundSize = style.backgroundSize
-    body.style.backgroundColor = style.backgroundColor
-    body.style.backgroundImage = style.backgroundImage
+    bg.style.backgroundSize = style.backgroundSize
+    bg.style.backgroundColor = style.backgroundColor
+    angular.element(bg).css 
+      'background-image': style.backgroundImage
+    # body.style.backgroundImage = style.backgroundImage
     b = 0
     while b < style.backgroundGradient.length
-      body.style.backgroundImage += style.backgroundGradient[b]
+      bg.style.backgroundImage += style.backgroundGradient[b]
       b++
 
-  udpateBackground(true)
+  # udpateBackground(true)
 
   $scope.getNextPage = ()->
     $scope.loading=true
@@ -228,9 +238,6 @@ app.controller "userCtrl", ($scope, userService,$routeParams, $filter, pageServi
 
   pageService.getData('profile', $scope.userProfile, null).then (result)->
     return
-
-
-
 
 
 

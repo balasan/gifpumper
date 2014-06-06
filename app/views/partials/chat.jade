@@ -1,8 +1,7 @@
 div.gpui.chatOuter(ng-controller="chatCtrl")
-  #chatTop.menuTop.chat.label2(style="padding-top:1px;padding-bottom:1px;  opacity: .7;color:red")
-  | msg
-  .x 
-    a(href='javascript:openChat();') x
+  #chatTop.chat(rand-color)
+    | Chat!
+    .x 
   #chatBox.chat(chatbox)
     div(ng-repeat="text in pageData.text")
       span(ng-show="text.user != pageData.text[$index-1].user" )

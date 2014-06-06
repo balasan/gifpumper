@@ -9,11 +9,12 @@ div.galleryHeading pages
 //- div(masonry="{ transitionDuration: '400ms' }")
 div
   //- .masonry-brick
-  .pageItem(bindonce='page' ng-repeat="page in pagesData track by $index")
-    div
+  .pageItem(bindonce='page'   ng-repeat="page in pagesData track by $index")
+      div.galleryImage
         a(thumbnail freeze w="600" h="600" bo-href="'/'+page.pageName | encode")
           //- .thumbImg(bg-image bg="{{page.thumb}}")
           img.thumb
+
       div.infoDiv
         div.pageTitle
           a(bo-href="'/'+page.pageName | encode") {{page.pageName}}
@@ -31,7 +32,7 @@ div
 
         a.miniButton(bo-click="who = !who; $emit('masonry.reload');")
           span(bo-text="page.likes.length")
-          //- img.heartImg(src='https://s3.amazonaws.com/gifpumper/ui/heart-03.gif')
+          img.heartImg(src='https://s3.amazonaws.com/gifpumper/ui/heart-03.gif')
         div.whoLikes(bo-show="who")  
           div( bindonce='user' ng-repeat="user in page.likes")
             a(bo-href="'/profile/' + user | encode") 

@@ -12,21 +12,43 @@
   }
 }
 
+.mainMenu{
+  .nuMenu{
+    // float:left;
+    display:inline-block;
+  }
+}
+
+
+
 #pageMenu{
   left:400px;
 }
+
+
 .menuDiv{
   a{
     display:block;
   }
 }
+
+
 .menuButton{
   margin-right:10px;
 }
+
 .uiOpen{
   .textInput{
     display:block;
-    width:180px;
+    width:200px;
+    padding:3px 5px;
+    // border-radius:8px;
+    margin: 10px auto;
+    border:none;
+    border-bottom: 1px solid rgba(0,0,0,.25);
+    outline:none;
+
+
   }
   #editMediaContainer{
     .textInput{
@@ -37,25 +59,29 @@
     display:block;
   }
 }
+
 .menuHover{
   padding-bottom:20px;
 }
+
 .editTabs{
   font-size:15px;
   // text-align:center;
 }
+
 .nuMenuContainer{
   position:fixed;
-  top:40px;
+  top:60px;
   left:10px;
   @include transform(translateZ(10000px));
-
+  z-index: 1000000;
 }
 
 .nuMenu{
   padding:10px;
   font-size:20px;
   color:white;
+  width:40px;
   // background:rgba(0,255,50,1);
   text-align:center;
   margin:4px;
@@ -67,25 +93,65 @@
   &:hover{
     text-shadow: 0px 0px 1px rgba(0,0,0,.25);      
   }
+  user-select: none;
+  &.big{
+    font-size:24px;
+    border-radius:20px;
+    width:50px;
+  }
 }
 
 #likeIm{
-  float:left;
+  // float:left;
 }
 .likeHeart{
   width: 21px; 
-  margin-top: -2px; 
-  margin-left: 2px;
+  // margin-top: -2px; 
+  // margin-left: 2px;
+  margin:0 5px -6px 0px;
 }
 #likeButtonText{
-  float:left;
+  // float:left;
 }
 #likePageButton{
+  div{
+    // display:inline-block;
+  }
+  #pageName{
+    width:100px;
+  }
   z-index:10002;
   @include transform(translateZ(10000px));
-  top:5px;
-  left:50px;
-  position:fixed;
+  // top:10px;
+  // left:120px;
+  float:right;
+  // margin:auto;
+  display:inline-block;
+  font-size:14px;
+  // position:fixed;
+  // background:white;
+  padding:5px;
+  border-radius:5px;
+  position:relative;
+  // min-width:100px;
+}
+
+
+
+.uploadForm{
+  padding:10px 0;
+  #uploadBtn{
+    top:0px;
+    width:100%;
+    left:0px;
+    height:100%;
+    display:block;
+    padding: 8px;
+    display:block;
+    border-radius:0px;
+    position:absolute;
+    opacity:0;
+  }
 }
 
 

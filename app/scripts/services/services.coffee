@@ -46,13 +46,40 @@ app.factory 'currentUser', (nowService, $http) ->
 
   # nowService.on 'notifyUser', (notify,newN)->
   #   console.log notify
+  onlineUsers = {}
+  noobs=0;
 
-  on : nowService.on
+  nowService.on 'updatePageUser', (action, users) ->
+    if action == 'replace'
+       onlineUsers = {}
+       noobs = 0; 
+
+    # not obj if delete
+    if action == 'delete'
+      delete onlineUsers[users]
+      if users == 'n00b'
+        noobs--
+    else
+      for key, group of users
+        for i, user of group
+          if i == 'n00b'
+            noobs++
+          else if !onlineUsers[user]
+            onlineUsers[user.name] = user
   
+  on : nowService.on
+
+  getOnlineUsers : ()->
+    onlineUsers : onlineUsers
+    noobs : noobs
+
   getCurrentUser : (callback)->
     now.ready ->
       now.currentUser (username) ->
         callback(username)
+
+
+
 
 
 

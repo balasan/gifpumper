@@ -67,6 +67,7 @@ html()
     <!-- bower:js -->
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/momentjs/moment.js"></script>
+    <script src="bower_components/ng-file-upload-shim/angular-file-upload-shim.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/json3/lib/json3.min.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
@@ -75,10 +76,15 @@ html()
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-bindonce/bindonce.js"></script>
     <script src="bower_components/ng-ckeditor/ng-ckeditor.js"></script>
-    <script src="bower_components/ckeditor/ckeditor.js"></script>
+    <script src="bower_components/WeakMap/WeakMap.js"></script>
+    <script src="bower_components/pointerevents-polyfill/pointerevents.min.js"></script>
+    <script src="bower_components/ng-file-upload/angular-file-upload.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="bower_components/ng-ckeditor/libs/ckeditor/ckeditor.js"></script>
+    <script src="scripts/lib/xml2json.js"></script>
+
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/main.js"></script>
     //- <script src="scripts/controllers/navbar.js"></script>
@@ -91,6 +97,7 @@ html()
     //- <script src="scripts/directives/mongooseError.js"></script>
     <script src="scripts/controllers/controllers.js"></script>
     <script src="scripts/controllers/pageController.js"></script>
+    <script src="scripts/controllers/upload.js"></script>
 
     <script src="scripts/services/services.js"></script>
     <script src="scripts/filters/filters.js"></script>

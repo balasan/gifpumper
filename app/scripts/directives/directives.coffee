@@ -5,8 +5,6 @@ app = angular.module("gifpumper")
 
 
 
-
-
 app.directive "randColor", ()->
   link:(scope,el,att)->
     bgcolorlist = new Array("rgba(0,72,234,1)", "rgba(96,0,234,1)", "rgba(114,34,0,1)", "rgba(102,129,135,1)", "rgba(102,204,255,1)", "rgba(252,255,0,1)", "rgba(194,127,255,1)", "rgba(0,95,21,1)", "rgba(255,0,170,1)", "rgba(249,6,6,1)", "rgba(173,216,230,1)", "rgba(40,40,40,1)", "rgba(40,40,40,1)")
@@ -50,7 +48,17 @@ app.directive "chatbox", ($timeout) ->
     scope.toBottom = ()->
       el[0].scrollTop = el[0].scrollHeight;
     scope.$watch 'pageData.text.length', ()->
-      scope.toBottom;
+      $timeout ()->
+        el[0].scrollTop = el[0].scrollHeight;
+        return
+    textbox=document.getElementById('inputBox')
+    
+    angular.element(textbox).on 'keyup', ()->
+      s_height = textbox.scrollHeight
+      textbox.setAttribute('style','height:'+s_height+'px')
+    
+    scope.$on '$destroy', ()->
+      angular.element(textbox).off 'keyup'
 
 
 app.directive "element", ($document, $rootScope, $timeout) ->
@@ -72,7 +80,7 @@ app.directive "element", ($document, $rootScope, $timeout) ->
 
 
     mouseDownHandler = (e) ->
-      if e.ctrlKey || e.button > 1
+      if e.ctrlKey || e.button > 1 || !$rootScope.edit
         return;
 
       if(!$rootScope.selected)
@@ -96,8 +104,8 @@ app.directive "element", ($document, $rootScope, $timeout) ->
       # $document.on('mouseout', mouseupHandler);
       # el.on('mousedown', deselect)
       # if($rootScope.selected !=null)
-      $document.unbind('mouseup', deselect)
-      $document.on('mouseup', deselect)
+      el.parent().parent().unbind('mouseup', deselect)
+      el.parent().parent().on('mouseup', deselect)
 
       $timeout( ()->
         okToDeselect = true;
@@ -117,7 +125,7 @@ app.directive "element", ($document, $rootScope, $timeout) ->
         $rootScope.selected = null
         # $document.unbind "mousedown", deselect
         scope.$apply()
-        $document.unbind('mouseup', deselect)
+        el.parent().parent().unbind('mouseup', deselect)
       okToDeselect = true;
 
     
@@ -201,15 +209,22 @@ app.directive "element", ($document, $rootScope, $timeout) ->
       clearTimeout(updateTimer);
       updateTimer =null;
 
+    el.find('i').on 'click', (e)->
+      $rootScope.selected = scope.el._id
+      el.parent().parent().unbind('mouseup', deselect)
+      el.parent().parent().on('mouseup', deselect)
 
     scope.openEditor = ()->
       # $parent.editElement = pageData.images | getById:$parent.selected; 
       scope.$parent.$parent.editMenu=!scope.$parent.$parent.editMenu
-      okToDeselect = false;
-      $rootScope.selected = scope.el._id
+      # okToDeselect = false;
+      # $rootScope.selected = scope.el._id
+
+    scope.closeEditor = ()->
+      okToDeselect=true;
 
     scope.$on '$destroy', ()->
-      $document.unbind "mousedown", deselect
+      el.parent().unbind "mousedown", deselect
       $document.unbind "mouseup", mouseupHandler
       el.unbind 'mousedown' 
       el.remove();
@@ -217,7 +232,7 @@ app.directive "element", ($document, $rootScope, $timeout) ->
 
 
 
-app.directive "page", ($document, $window)->
+app.directive "page", ($document, $window, $rootScope)->
   templateUrl: '/partials/element'
   link:(scope, el, att) ->
     scope.keys = {}
@@ -228,7 +243,7 @@ app.directive "page", ($document, $window)->
     tx = 0
     tz = 0
 
-
+    scope.stopAnimation = false;
     updateMt = ()->
       drx = rX- scope.mt.rotX
       dry = rY-scope.mt.rotY
@@ -244,8 +259,9 @@ app.directive "page", ($document, $window)->
       scope.mt.rotY += dry 
       scope.mt.x += dx 
       scope.mt.z += dz
-      scope.$apply() 
-      $window.requestAnimationFrame updateMt
+      scope.$apply()
+      if !scope.stopAnimation
+        $window.requestAnimationFrame updateMt
 
     $window.requestAnimationFrame updateMt
 
@@ -260,8 +276,35 @@ app.directive "page", ($document, $window)->
       #   rX=yRot*30
       #   rY=xRot*30
 
+    parent = el.parent() 
+
+    startX=0
+    startY=0
+    ww = $window.innerWidth
+    wh = $window.innerHeight
+    scale = 1000.0
+
+    parent.on 'pointerdown', (e)->
+      if $rootScope.selected != null
+        return
+      parent.addClass('grab')
+      startX = e.x + rY*ww*4/scale
+      startY = e.y - tz*wh/scale
+      parent.on 'pointermove', (e)->
+        # if !$rootScope.mouseMove 
+        $rootScope.mouseMove = true;
+          # scope.$apply()
+        rY = ((-e.x + startX)/ww)*scale/4
+        tz = ((e.y - startY)/wh)*scale
+        e.preventDefault()
+    parent.on 'pointerup', (e) ->
+      $rootScope.mouseMove = false;
+      parent.off 'pointermove'
+
 
     $document.on 'keydown', (e) ->
+      if document.activeElement != document.body
+        return
       switch e.which
         when 90 then scope.keys.z = true
         when 88 then scope.keys.x = true
@@ -273,12 +316,12 @@ app.directive "page", ($document, $window)->
           tz +=  80
           # tz += Math.cos(scope.mt.rotY*Math.PI/180) * 100
           # tx -= Math.sin(scope.mt.rotY*Math.PI/180) * 100
-          # e.preventDefault()
+          e.preventDefault()
         when 40  
           tz -=  80
           # tz -= Math.cos(scope.mt.rotY*Math.PI/180) * 80
           # tx += Math.sin(scope.mt.rotY*Math.PI/180) * 80          
-          # e.preventDeorfault()
+          e.preventDefault()
         when 37 then rY -=20
         when 39 then rY +=20
     $document.on 'keyup', (e) ->
@@ -290,7 +333,11 @@ app.directive "page", ($document, $window)->
 
     scope.$on '$destroy', () ->
       $document.unbind 'keydown'    
-      $document.unbind 'keyup'    
+      $document.unbind 'keyup' 
+      $document.unbind 'mousemove'
+      scope.stopAnimation = true
+      parent.off 'pointerdown'   
+      parent.off 'pointerup'   
 
 
 
@@ -310,13 +357,14 @@ app.directive "soundcloud", ($timeout,$http) ->
   link: (scope, element, attrs) ->
     # scope.$watch 'el', () ->
     if(!scope.el.content.match('object') && !scope.el.content.match('iframe'))
-      url = "http://soundcloud.com/oembed/?format=json&url="+scope.el.content+"&iframe=true"
+      url = "http://soundcloud.com/oembed/?format=json&url="+scope.el.content+"&iframe=true&hide_related=true"
+      # <iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/137952131&amp;color=ff5500&amp;auto_play=false&amp;hide_related=true&amp;show_artwork=true"></iframe>
       $http(
         method: 'GET' 
         url: url
         cache: true
         ).then (result) ->
-                  scope.el.content=result.data.html; 
+          scope.el.content=result.data.html; 
     $timeout(()->
       element.children().css
         width:'100%'

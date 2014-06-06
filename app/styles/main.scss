@@ -2,7 +2,7 @@
 
 /* ERIC MEYER RESET 
 ------------------------------------------------------------*/
-// @import "compass/reset";
+@import "compass/reset";
 
 /* PAUL IRISH BOX SIZING
 ------------------------------------------------------------*/
@@ -15,7 +15,9 @@
 $fa-font-path: "/bower_components/font-awesome/fonts";
 @import "font-awesome/scss/font-awesome";
 
+@import "colors";
 @import "oldgp";
+@import "general";
 @import "mainPage";
 @import "menus";
 @import "left-menu";

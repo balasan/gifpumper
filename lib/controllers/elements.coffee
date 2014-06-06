@@ -115,6 +115,7 @@ module.exports = (everyone, nowjs) ->
         $set:
           userImage: url
       , (error) ->
+        oldthis.user.image = url
         # unless error
           # TODO implement
           # everyone.now.updateUsrImg username, url

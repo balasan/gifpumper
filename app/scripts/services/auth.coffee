@@ -24,6 +24,7 @@ angular.module('gifpumper')
         $rootScope.currentUser = user
         nowService.disconnect()
         nowService.connect()
+        $rootScope.loggedIn = true
         cb()
       , (err) ->
         cb err
@@ -45,6 +46,7 @@ angular.module('gifpumper')
         $rootScope.$broadcast('logout')
         nowService.disconnect()
         nowService.connect()
+        $rootScope.loggedIn = false
       , (err) ->
         cb err
       ).$promise
@@ -61,6 +63,9 @@ angular.module('gifpumper')
       cb = callback or angular.noop
       User.save(user, (user) ->
         $rootScope.currentUser = user
+        nowService.disconnect()
+        nowService.connect()
+        $rootScope.loggedIn = true
         cb user
       , (err) ->
         cb err

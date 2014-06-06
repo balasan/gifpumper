@@ -9,7 +9,7 @@ body {
   font-family: arial, helvetica, sans-serif;
   font-size: 13px;
   z-index:-1000;
-  background-attachment:fixed;
+  // background-attachment:fixed;
   margin:0px;
   /*opacity:0;*/
 }
@@ -89,43 +89,7 @@ body {
 
 }
 
-.uiOpen{
 
-  position: fixed;
-  z-index: 10001;
-  background-color: fuchsia;
-  opacity: .9;
-  
-  left: 140px;
-  top:70px;
-  
-  // display:none;
-  
-  -webkit-transform: translate(0px, 0px)  scale(1) translateZ(10000px);
-  -moz-transform: translate(0px, 0px)  scale(1) translateZ(10000px);
-  -o-transform: translate(0px, 0px)  scale(1) translateZ(10000px);
-  -transform: translate(0px, 0px)  scale(1) translateZ(10000px);
-  
-  font-family: arial, helvetica, sans-serif;
-  font-size: 11px;
-  
-  visibility: visible;
-  overflow: hidden;
-  padding:10px;
-  
-  -moz-transition: -moz-transform .3s ease-out;
-  /* WebKit */
-  -webkit-transition: -webkit-transform .3s ease-out;
-  /* Opera */
-  -o-transition: -o-transform .3s ease-out;
-  /* Standard */
-  transition: transform .3s ease-out;
-  
-  -webkit-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.6);
-  -moz-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.6);
-  box-shadow: 6px 6px 6px  rgba(0, 0, 0, 0.6);
-
-}
 
 
 
@@ -308,25 +272,6 @@ text-decoration: none;
 /*  background:none; */
 }
 
-.button:active  {
-
-  border:none;
-   -moz-box-shadow: -1px -2px 3px rgba(130,130,130,1);
-   -webkit-box-shadow: -2px -1px 3px rgba(130,130,130,1);
-   border-bottom: 1px solid rgba(130,130,130,1);
-   background-image:none;
-}
-
-.button, button:visited {
-
-  border:none;
-    -moz-box-shadow: 1px 2px 3px rgba(130,130,130,1);
-    -webkit-box-shadow: 1px 2px 3px rgba(130,130,130,1);
-    border-bottom: 1px solid rgba(130,130,130,1);   
-   background-image:none;
-   background-color:white;  
-   
-}
 
 .console1{
 
@@ -343,24 +288,7 @@ position:fixed;
 
 }
 
-#online{
-  position:fixed;
-  padding:7px; 
-  padding-bottom:10px; 
-  top:5px;
-  right:15px;
-/*  background-image:url('http://desizntech.info/wp-content/uploads/2010/05/pattern_5.jpg');   */
-  background-color:white;
-  opacity:.7;
-  max-height: 250px;
-  width:130px;
-  z-index: 1000;
-  overflow: auto;
-  -webkit-box-shadow: 6px 6px 6px rgba(130,130,130,1);
-  -moz-box-shadow: 6px 6px 6px rgba(130,130,130,1);
-  box-shadow: 6px 6px 6px  rgba(130,130,130,1);
-  z-index:10002;
-}
+
 
 .headBar{
   width:100%; 
@@ -649,16 +577,6 @@ input[type="password"]{
 
 
 
-#pageName{
-  padding:2px;
-/*  margin-left:4px; */
-  margin-right:4px;
-  width:300px;
-  color: grey;
-/*  font-size:14px; */
-/*  position:fixed; */
-}
-
 .activePages{
 /*  padding: 2px 4px 2px 4px; */
   font-size:16px;
@@ -867,15 +785,6 @@ background-image: -webkit-gradient(
 
 }
 
-.pageItem{
-
-  margin:5px;
-  padding:7px;
-  background-color:rgba(255,255,255,.4);
-  border: 1px dotted white; 
-  border-radius:2px;
-}
-
 
 .activePages{
 
@@ -886,20 +795,5 @@ background-image: -webkit-gradient(
   border-radius:2px;
 }
 
-.x {
-  position: absolute;
-  font-family: Courier New, Courier New, monospace; 
-  font-size: 16px;
-  top:2px;
-  right:2px;
-  width: 9px;
-  height:9px;
-  line-height: 6px;
-  box-shadow: -1px 1px 2px  rgba(126, 126, 126, 0.6);
-  -webkit-box-shadow: -1px 1px 2px  rgba(126, 126, 126, 0.6);
-  -moz-box-shadow: -1px 1px 2px  rgba(126, 126, 126, 0.6);
-  z-index: 999;
-  border-radius:2px;
-  
-}
+
 

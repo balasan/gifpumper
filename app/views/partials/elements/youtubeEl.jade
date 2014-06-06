@@ -6,3 +6,4 @@
 //- embed(wmode='transparent', embed-src="{{el.content | youtube:'object'}}", type='application/x-shockwave-flash', width='100%', height='100%', allowscriptaccess='always', allowfullscreen='true')
 
 iframe.youtube-player(ng-show="el.content" type='text/html', width='100%', height='100%', src='{{el.content | youtube:"iframe"}}', allowfullscreen='allowfullscreen', frameborder='0', autoplay="1")
+.coverLayer(ng-show='$root.edit || $root.mouseMove')

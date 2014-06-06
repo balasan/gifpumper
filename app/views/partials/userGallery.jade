@@ -10,7 +10,7 @@ div
   //- div(masonry="{ transitionDuration: '800ms' }")
   //- .masonry-brick
   .pageItem(bindonce='page' ng-repeat="page in pagesData")
-    div
+      .galleryImage
         a(thumbnail freeze w="500" h="500" bo-href="'/'+page.pageName | encode")
           //- .thumbImg(bg-image bg="{{page.thumb}}")
           img.thumb
@@ -19,16 +19,15 @@ div
           a(bo-href="'/' + page.pageName | encode") 
             span( bo-text="page.pageName")
           
-
         div(bo-show="userProfile" bo-text="page.owner | owner:userProfile") 
 
         div
           span( bo-text="page.privacy | privacy")
           span( bo-text = "' ' + (page.versions.length+1)+'v'")
 
-        a.miniButton(bo-click="who = !who; $emit('masonry.reload');")
+        a.miniButton(bo-show="page.likes.length" bo-click="who = !who; $emit('masonry.reload');")
           span(bo-text="page.likes.length")
-          //- img.heartImg(src='https://s3.amazonaws.com/gifpumper/ui/heart-03.gif')
+          img.heartImg(src='https://s3.amazonaws.com/gifpumper/ui/heart-03.gif')
         div.whoLikes(bo-show="who")  
           div( bindonce='user' ng-repeat="user in page.likes")
             a(bo-href="'/profile/' + user | encode") 

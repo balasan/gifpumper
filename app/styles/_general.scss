@@ -1,0 +1,41 @@
+
+body{
+
+  -webkit-font-smoothing: antialiased;
+  letter-spacing:.02em;
+}
+
+input{
+  -webkit-font-smoothing: antialiased;
+  letter-spacing:.02em;
+
+}
+
+hr{
+  border:none;
+  border-bottom:1px solid rgba(0,0,0,.25);
+  margin-bottom:20px;
+}
+
+
+h1{
+  font-size: 1.8em;
+  padding: 10px 0px;
+}
+
+.colLeft{
+  float:left;
+}
+.colRight{
+  float:right;
+}
+
+#background{
+  position:fixed;
+  z-index:-1000;
+  top:0px;
+  left:0px;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}

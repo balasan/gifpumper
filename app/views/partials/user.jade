@@ -1,17 +1,17 @@
-#profileContainer.shadow(page-data="userData" app-background )
+#profileContainer.shadow( page-data="userData"  )
     div
       #userName
         a(href='javascript:changeProfileColor()') {{userData.username}}
         #profileClicks(style='color: white; font-size: 12px;') 10484 clicks
-      div#userImage
+      div#userImage()
         img#profileImage(src='{{userData.userImage}}')
         .userEdit.nuMenu(ng-click='editMenu=!editMenu' ng-show='currentUser.name==userProfile')
           .fa.fa-pencil
 
 div.pageList.userList( ng-include="'/partials/userGallery'", infinite)
 
-div(ng-include="'partials/chat'")
+//- div(ng-include="'partials/chat'")
 
-div(ng-include="'partials/left-menu'")  
+//- div(ng-include="'partials/left-menu'")  
 
   

@@ -7,7 +7,8 @@ angular.module('gifpumper', [
   'ngRoute',
   # "wu.masonry",
   "ngCkeditor",
-  'pasvaz.bindonce'
+  'pasvaz.bindonce',
+  'angularFileUpload'
 ])
   .value('$anchorScroll', angular.noop)
   .config ($routeProvider, $locationProvider, $httpProvider) ->
@@ -22,7 +23,12 @@ angular.module('gifpumper', [
 
       .when "/:pageName",
         templateUrl: "partials/page"
-        controller: 'pageCtrl'
+        controller: 'spaceCtrl'
+
+
+      .when "/*",
+        templateUrl: "partials/page"
+        controller: 'spaceCtrl'
 
       # .when '/login',
       #   templateUrl: 'partials/login'

@@ -3,19 +3,32 @@ block content
   <div id="fb-root"></div>
   //- #feed.userPages
         //- #feedContainer
-  div(ng-include="'partials/right-menu'")
-
-  #mainPage(ng-controller="mainPageCtrl" ng-show="showMain")
-    span(save-scroll)
-    div.feed(page-data="pageData" feed infinite ng-controller="feedCtrl" )
-    div.pageList( gallery, infinite, ng-controller="galleryCtrl" )
-      
-    div(ng-include="'partials/chat'")  
-    //- div(ng-include="'partials/left-menu'")  
+  #background
 
 
+  span(ng-controller="pageCtrl")
+  
+    div(ng-include="'partials/right-menu'")
+    div(ng-include="'partials/left-menu'")  
 
-  div(ng-view='ng-view' autoscroll="false")
+    #mainPage( ng-show="showMain")
+      span(save-scroll)
+      //- div.feed(page-data="pageData" feed  ng-controller="feedCtrl" )
+      div.pageList( gallery, infinite, ng-controller="galleryCtrl" )
+        
+      //- div(ng-include="'partials/chat'")  
+      //- div(ng-include="'partials/left-menu'")  
+    
+    #chatButton(style="display:none; height:30px") 
+      <a href='javascript:openChat();'><img src="http://how2program.com/thumbs/4054_Pixel_chat_icon_._.._.jpg6U4SDMK2R5.jpg",border='0px', height='30px'></a>
+
+    div(ng-include="'partials/chat'")
+
+
+
+
+
+    div(ng-view='ng-view' autoscroll="false")
 
 
 

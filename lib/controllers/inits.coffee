@@ -331,7 +331,7 @@ module.exports = (everyone, nowjs, sessionStore) ->
           nowjs.getGroup(groupName).now.updatePageUser "add", [userObj]
         else
           userObj = {}
-          userObj[oldthis.user.name] = true
+          userObj[oldthis.user.name] = oldthis.user
           nowjs.getGroup(groupName).pageUsers[oldthis.user.clientId] = userObj
           nowjs.getGroup(groupName).now.updatePageUser "add", [userObj]
         callback null, result

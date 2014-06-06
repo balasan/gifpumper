@@ -1,16 +1,31 @@
 #menuContainer.gpui()
-  div.innerContainer(ng-show="pageName != 'profile'")
-    #editPageButton.menuButton.dropButton(ng-click="pageMenu=!pageMenu; elementMenu=false")
-      |Page
-      #editPageMenu.menu(sub-menu ng-show="pageMenu")
-        div.menuDiv 
-          a(href='javascript:void(0);' ng-click='moreMenu=!moreMenu') ⇧N New
-          a(href='javascript:saveVersion()') ⇧S Save
-          a(href='javascript:void(0);' ng-click='privacyMenu=!privacyMenu') ⇧P Privacy
-    //- #animateButton.menuButton(ng-click='animatePage=!animatePage') Animate
-    //- #helpButton.menuButton(ng-click="helpMenu!=helpMenu") Help
+  .mainMenu(ng-show="pageName != 'profile'")
+    //- /- #editPageMenu.menu(sub-menu ng-show="pageMenu")
+    .nuMenu.big(rand-color ng-show="!$root.edit && pageName!='main1' && pageName!='profile'" ng-click='$root.edit=true') 
+      i.fa.fa-pencil 
+    .nuMenu.big(rand-color ng-show="$root.edit && pageName!='main1' && pageName!='profile'" ng-click='$root.edit=false') 
+      i.fa.fa-eye
 
-.nuMenuContainer.gpui(ng-show="pageName!='profile' && pageName!='main'") 
+    .nuMenu.big(rand-color ng-show="!$root.edit" ng-click='moreMenu=!moreMenu') 
+      i.fa.fa-file-o  
+
+    #likePageButton.gpui(ng-show="pageName != 'profile' && pageName != 'main'")    
+      span#likeButtonText()
+        |{{pageData.likes.length}}
+      span#likeIm(ng-click="likePage(likesPage)")
+        img.likeHeart( ng-show="likesPage"  src="https://s3.amazonaws.com/gifpumper/ui/heart-03.gif")
+        img.likeHeart(ng-show="!likesPage" src="http://asdf.us/im/84/heart03_1323653907.gif")
+
+      span#pageName()
+        a(href="/{{pageName}}") {{pageName}} 
+        |by 
+        a(href="/profile/{{pageData.owner}}") {{pageData.owner}}
+      span(class="fb-like",id="fb-like", data-href="http://gifpumper.com/{{pageName}}", layout="button_count", data-send="false",   data-width="90", data-show-faces="false", style="float:left;width:90px;height:auto")
+
+
+
+
+.nuMenuContainer.gpui(ng-show="$root.edit && pageName!='profile' && pageName!='main1'") 
     .nuMenu(rand-color ng-click='settingsMenu=!settingsMenu') 
       i.fa.fa-language 
     .nuMenu(rand-color ng-click='settingsMenu=!settingsMenu') 
@@ -19,26 +34,12 @@
       |bg 
     .nuMenu(rand-color ng-click='addMenu=!addMenu; ')
       i.fa.fa-plus
-
 .nuMenuContainer.gpui(ng-show="pageName=='profile' && currentUser.name==userProfile") 
     .nuMenu(rand-color ng-click='backgroundMenu=!backgroundMenu') 
       |bg 
 
 
 
-
-#likePageButton.gpui(ng-show="pageName != 'profile'")    
-    #likeButtonText()
-      |{{pageData.likes.length}}
-    #likeIm(ng-click="likePage(likesPage)")
-      img.likeHeart( ng-show="likesPage"  src="https://s3.amazonaws.com/gifpumper/ui/heart-03.gif")
-      img.likeHeart(ng-show="!likesPage" src="http://asdf.us/im/84/heart03_1323653907.gif")
-
-    #pageName()
-      a(href="/{{pageName}}") {{pageName}} 
-      |by 
-      a(href="/profile/{{pageData.owner}}") {{pageData.owner}}
-    div(class="fb-like",id="fb-like", data-href="http://gifpumper.com/{{pageName}}", layout="button_count", data-send="false",   data-width="90", data-show-faces="false", style="float:left;width:90px;height:auto")
 
 
 
@@ -48,26 +49,25 @@ div(ng-include="'partials/content-menus'")
 
 ////more pages/////
 
-#moreMenu.uiOpen(ng-show='moreMenu')
+#moreMenu.uiOpen.menuContainer(ng-show='moreMenu')
   | create new page:
   br
-  input(ng-model="newPageName" type='text',id='newPage', name='newPage', placeholder='enter unique page name', onfocus="typing=true", onblur="typing=false")
+  input.textInput(ng-model="newPageName" type='text',id='newPage', name='newPage', placeholder='enter unique page name', onfocus="typing=true", onblur="typing=false")
   //textarea.addEditors(style='width:auto;', type='text',id='newPage', name='newPage', placeholder='enter user name', onfocus="value='', typing=true",onblur="typing=false", onKeyPress="searchPages();")
   br
-  input#makeNew.button(type='submit', style='width:78px;', name='makeNew', value='new page',ng-click="addPage(newPageName,false)")
+  input#makeNew.button(type='submit', name='makeNew', value='new page',ng-click="addPage(newPageName,false)")
   | 
-  input#save.button(style='width:78px;', type='submit', name='save', value='save as',ng-click="addPage(newPageName,true)")
+  input#save.button( ng-show="pageName!='main' && pageName!='profile'" type='submit', name='save', value='save as',ng-click="addPage(newPageName,true)")
   br
-  | *you must login to create your own page
-  .x
-    a(href='javascript:void(0);' ng-click="moreMenu=false") x
+  //- | *you must login to create your own page
+  .x(ng-click="moreMenu=false")
 
 
 
 
 
 
-#pageMenu.uiOpen(ng-show="settingsMenu")
+#pageMenu.uiOpen.menuContainer(ng-show="settingsMenu")
   form(name='privacyForm')
     | Set Page Privacy:
     br
@@ -83,6 +83,8 @@ div(ng-include="'partials/content-menus'")
     input(ng-model="pageData.privacy" ng-click="setPrivacy()" type='radio', name='privacy', value='3',checked=check)
     | invisible
     br
+    input.button(value="save a version of this page")
+    br
     input.button(value="delete this page" type='submit' ng-click="deletePage();") 
 
   //- br
@@ -91,7 +93,6 @@ div(ng-include="'partials/content-menus'")
   //- textarea.addEditors(style='width:auto;', type='text',id='addEditors', name='addEditors', placeholder='enter user name', onfocus="value='', typing=true",onblur="typing=false", onKeyPress="searchUsers();")
   //- #searchResults
   //- input#pageSettings.button(type='submit', style='width:78px;', name='pageSettings', value='Save',onclick='setPrivacy()') 
-  .x
-    a(href='javascript:void(0);' ng-click="settingsMenu=false") x
+  .x(ng-click="settingsMenu=false")
 
 
