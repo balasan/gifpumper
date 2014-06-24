@@ -6,12 +6,18 @@ app = angular.module("gifpumper")
 app.directive "editMenu", ($document,$filter)->
   link:(scope,el,att)->
     scope.$watch 'selected', (newEl, oldEl)->
-      if(newEl != oldEl)
+      if(newEl != oldEl && newEl != null)
         id = $filter('getById')(scope.pageData.images, scope.selected) 
-        scope.editElement = scope.pageData.images[id]
-        if scope.editElement != undefined
-          scope.editType= $filter('contentType')(scope.editElement.contentType) 
+        scope.selectedElement = scope.pageData.images[id]
+        scope.editElement=[]
 
+        for key, value of scope.selectedElement
+          scope.editElement[key]=value
+
+        if scope.editElement != undefined
+          scope.editType= $filter('editType')(scope.editElement.contentType) 
+        if scope.editElement.contentType == 'text'
+          scope.editElement.text = scope.editElement.content
     scope.replaceElement = ()->
 
       scope.editElement.contentType = scope.editType
@@ -26,13 +32,18 @@ app.directive "editMenu", ($document,$filter)->
           scope.editElement.contentType = 'mp3Url'
         else
           scope.editElement.contentType = ''
-      angular.element( document.getElementById(scope.editElement._id)).scope().editElementFn()
+      if scope.editElement.contentType == 'text'
+        scope.editElement.content = scope.editElement.text
+
+      options={}
+      options.replaceUrl = true;
+      angular.element( document.getElementById(scope.editElement._id)).scope().editElementFn(options)
       
 
 
 app.directive "addMenu", ($document)->
   link:(scope,el,att)->
-    scope.addNewImg = ->
+    scope.addNewImg = (options)->
       unless scope.pageData.version is `undefined`
         alert "You can't edit saved versions"
         return
@@ -41,9 +52,9 @@ app.directive "addMenu", ($document)->
       is2d = scope.is2d
       imgUrl = scope.newImgUrl
 
-      if pageName is "profile"
+      if scope.pageName is "profile"
         now.updateUserPic scope.userProfile, imgUrl, (error) ->
-          document.getElementById("userImage").src = imgUrl  unless error
+          scope.pageData.userImage = imgUrl  unless error
           return
         return
 
@@ -70,8 +81,8 @@ app.directive "addMenu", ($document)->
         addObject.height = "300px"
         addObject.width = "400px"
       else
-        addObject.height = "auto"
-        addObject.width = "auto"
+        addObject.height = ""
+        addObject.width = ""
       addObject.z = Math.random() * 50 - scope.mt.z
       
       #addObject.left +=mainDivTrasfrom.x
@@ -104,7 +115,7 @@ app.directive "addMenu", ($document)->
           addObject.content = scope.soundcloudUrl
           addObject.contentType = "soundCloud"
           addObject.width = "300px"
-          addObject.height = "81px"
+          addObject.height = "300px"
         else if scope.vimeoUrl && scope.vimeoUrl != ""
           addObject.content = scope.vimeoUrl
           addObject.contentType = "vimeo"
@@ -125,5 +136,5 @@ app.directive "addMenu", ($document)->
         number = 1
       elArray.push addObject
 
-      scope.addNewImgCtrl elArray
+      scope.addNewImgCtrl options, elArray
      

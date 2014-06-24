@@ -30,7 +30,7 @@ app.controller "chatCtrl" , ($scope, nowService)->
       textObject = {}
       textObject.text = $scope.newText
       textObject.time = new Date()
-      now.submitComment $scope.pageName, textObject, $scope.username 
+      now.submitComment $scope.pageName, textObject, $scope.currentUser.name 
       $scope.newText = ""
     return
 
@@ -45,16 +45,17 @@ app.controller "chatCtrl" , ($scope, nowService)->
 
 
 app.controller "elController",($scope, elService) ->
+  
   $scope.elementFeed = ()->
     elService.elementFeed $scope.pageName, $scope.el
-  $scope.editElementFn = ()->
-    isPosition = true;
+  
+  $scope.editElementFn = (options)->
     if($scope.el)
-      elService.editElement $scope.pageName, $scope.el, isPosition
+      elService.editElement options, $scope.el, (err)->
+        console.log(err)
 
   $scope.deleteElement = ()->
     elService.deleteElement $scope.pageName, $scope.el
-
 
 
 
@@ -109,6 +110,46 @@ app.controller "mainCtrl",($scope, currentUser,$rootScope, Auth, $filter) ->
   #     $scope.loggedIn = false
   #   $scope.$apply()
 
+
+app.controller "activeCtrl", ($scope, activePages)->
+  $scope.onlineList={}
+  $scope.renderList={}
+
+  activePages.getAllUsersOnline (res)->
+    for user in res 
+      if !$scope.onlineList[user.page._id]  
+        $scope.onlineList[user.page._id] = {}
+        $scope.onlineList[user.page._id].data = user.page
+        $scope.onlineList[user.page._id].users=[]
+      $scope.onlineList[user.page._id].users.push(user.user)
+      $scope.renderList[user.page._id] =  $scope.onlineList[user.page._id]  
+
+
+  activePages.on 'updateFeed', (user, pageName, page, action) ->
+    return  if page is `undefined`
+    return  if pageName and pageName.split("profile___")[0] is "" or pageName is "main"
+    if action is "leave" && $scope.onlineList[page]
+      n = $scope.onlineList[page].users.indexOf(user)
+      $scope.onlineList[page].users.splice n, 1
+      if $scope.onlineList[page].users.length == 0
+        delete $scope.onlineList[page]
+        delete $scope.renderList[page]
+
+    else if action is "join"
+      if $scope.onlineList[page] is `undefined`
+        $scope.onlineList[page] = {}
+        # $scope.onlineList[page].data=pageData
+        $scope.onlineList[page].users = []
+      if $scope.onlineList[page].users.indexOf(user) <0
+        $scope.onlineList[page].users.push user
+
+      activePages.getPageData page, (res)->
+        $scope.onlineList[page].data=res 
+        $scope.renderList[page]=$scope.onlineList[page]
+        $scope.$apply() 
+
+    # console.log image
+    return
 
 
 
@@ -173,7 +214,7 @@ app.controller "userCtrl", ($scope, userService,$routeParams, $filter, pageServi
 
   userService.getUserData($scope.userProfile).then (result) ->
     $scope.userData = result;
-    $scope.pageData = $scope.userData
+    $scope.$parent.pageData = $scope.userData
     udpateBackground()
     # some hacks to make editing work
     $scope.editElement ={}
@@ -254,16 +295,26 @@ app.controller "feedCtrl", ($scope, feed, $filter) ->
   # feed.on "notifyFeed", (notify)->
   #   $scope.feed = $scope.feed.concat(notify)
   
+  theEnd = false
+
   $scope.getNextPage = ()->
+    if theEnd
+      return;
     $scope.scroll = false
     feed.getNextPage().then (result) ->
 
-      $scope.feed = $scope.feed.concat(result.reverse())
+      console.log(result)
+      if result.length == 0
+        theEnd = true;
+
+      $scope.feed = $scope.feed.concat(result)
+
       $scope.filteredFeed = $filter('feedFilter')($scope.feed)
+      # $scope.filteredFeed = $scope.feed
       # console.log($scope.feed);
       $scope.scroll = true
       $scope.loading=false
-      if $scope.filteredFeed.length<8
+      if $scope.filteredFeed.length<8 && $scope.filteredFeed.length
         $scope.getNextPage()
 
   if !$scope.feed.length

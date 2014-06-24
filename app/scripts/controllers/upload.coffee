@@ -6,7 +6,7 @@ uniqueId = ()->
   # Math.random should be unique because of its seeding algorithm.
   # Convert it to base 36 (numbers + letters), and grab the first 9 characters
   # after the decimal.
-  return  Math.random().toString(36).substr(2, 9) + "_";
+  return 'gifpumper_' + Math.random().toString(36).substr(2, 9) + "_";
 
 
 app.controller "uploadCtrl", ($scope, $http, $location, $upload, $rootScope) ->
@@ -31,15 +31,16 @@ app.controller "uploadCtrl", ($scope, $http, $location, $upload, $rootScope) ->
     while i < $files.length
       file = $files[i]
 
-      reader = new FileReader();
-      reader.onload = (e) ->
-        $scope.$parent.newImgUrl =  e.target.result
-        $scope.$parent.addNewImg() 
-      reader.readAsDataURL(file);
+
+
+      # reader = new FileReader();
+      # reader.onload = (e) ->
+      #   $scope.$parent.newImgUrl =  e.target.result
+      #   $scope.$parent.addNewImg() 
+      # reader.readAsDataURL(file);
 
 
 
-      return;
 
       file.progress = parseInt(0)
       date = new Date()
@@ -72,6 +73,14 @@ app.controller "uploadCtrl", ($scope, $http, $location, $upload, $rootScope) ->
                 key: data.postresponse.key
                 etag: data.postresponse.etag
 
+              $scope.$parent.newImgUrl = parsedData.location
+
+              if(scope.uploadType=="background")
+                $scope.$parent.setBackground({upload:true, server:true})
+              else
+                $scope.$parent.addNewImg({upload:true})
+
+              $scope.files = [];
               $scope.imageUploads.push parsedData
             else
               alert "Upload Failed"

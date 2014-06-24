@@ -486,16 +486,7 @@ position:fixed;
 
 }
 
-#profileContainer{
-  /*display:none;*/
-  position:fixed;
-  top:100px;
-  left:100px;
-  width:300px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  
-}
+
 
 
 
@@ -577,11 +568,7 @@ input[type="password"]{
 
 
 
-.activePages{
-/*  padding: 2px 4px 2px 4px; */
-  font-size:16px;
-  color:grey;
-}
+
 
 .thumbContainer{
   width:40px;
@@ -786,14 +773,6 @@ background-image: -webkit-gradient(
 }
 
 
-.activePages{
-
-  margin:5px;
-  padding:5px;
-  background-color:rgba(255,255,255,.4);
-  border: 1px dotted white; 
-  border-radius:2px;
-}
 
 
 

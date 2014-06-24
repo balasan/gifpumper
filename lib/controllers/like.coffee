@@ -1,5 +1,6 @@
 mongoose = require('mongoose')
 pageModel = mongoose.model('pageModel')
+userModel = mongoose.model('userModel')
 
 module.exports = (everyone, nowjs) ->
 
@@ -28,12 +29,60 @@ module.exports = (everyone, nowjs) ->
     str.replace(/^\s\s*/, "").replace /\s\s*$/, ""
 
 
+  everyone.now.likeToFollow = (callback)->
+
+    populateFavorites = (user,page,callback)->
+
+      # if user.favoritePages.indexOf(page._id) < 0
+      #   user.favoritePages.push(page._id)
+
+      userModel.findOne
+        username : page.owner
+      ,
+        _id : 1
+      , (err, owner) ->
+        if user.favoriteUsers.indexOf(owner._id) < 0
+          user.favoriteUsers.push(owner._id)
+        user.save (err)->
+        callback(user.username + " " + user.favoriteUsers.length)
+      # user.save (err)->
+      #   callback(user)        
+
+
+    getFavorites= (user,callback)->
+      pageModel.find
+        likes : 
+          $all : user.username
+      ,
+        pageName : 1
+        owner: 1
+      , (err, pages) ->
+        callback(user,pages)
+
+
+
+
+    userModel.find {}
+    , (err, users) ->
+      # callback(users)
+      for user in users
+        user.favoriteUsers=[]
+        getFavorites user, (user, pages)=>
+          for page in pages
+            populateFavorites user, page, callback
+            # callback(page)
+          # user.save()
+        # callback(user.username + " " + user.favoritePages.length + " " + user.favoriteUsers.length)
+
+
+
+
   everyone.now.likePage = (action, version, callback) ->
     oldthis = this
     if @user.name is "n00b"
       callback "you must be registered to do this!"
       return
-    pageName = @user.currentPage
+    pageId = @user.currentPage
     if action is "like"
       if version is null
         ver = 0
@@ -45,7 +94,7 @@ module.exports = (everyone, nowjs) ->
         ]
       if version is null
         pageModel.findOne
-          pageName: pageName
+          _id: pageId
           likes:
             $nin: [@user.name]
         ,
@@ -57,7 +106,7 @@ module.exports = (everyone, nowjs) ->
         , (err, result) ->
           if not err and result?
             pageModel.update
-              pageName: pageName
+              _id: pageId
             ,
               $addToSet:
                 likes: oldthis.user.name
@@ -68,8 +117,9 @@ module.exports = (everyone, nowjs) ->
               console.log err  if err
               return
 
+
             callback null, action
-            notifyUsers result.images, result.owner, oldthis.user.name, oldthis.user.image, "like", pageName
+            notifyUsers result.images, result.owner, oldthis.user.userId, oldthis.user.image, "like", pageId
             everyone.now.updateMain()
           else
             callback err
@@ -78,7 +128,7 @@ module.exports = (everyone, nowjs) ->
       unless version is null
         query = {}
         query["versions." + version + ".likes"] = $nin: [@user.name]
-        query["pageName"] = pageName
+        query["_id"] = pageId
         pageModel.findOne query,
           likes: 1
           likesN: 1
@@ -88,7 +138,7 @@ module.exports = (everyone, nowjs) ->
         , (err, result) ->
           if not err and result?
             pageModel.update
-              pageName: pageName
+              _id: pageId
               "versions.currentVersion": version
             ,
               $addToSet:
@@ -102,7 +152,7 @@ module.exports = (everyone, nowjs) ->
               return
 
             callback null, action
-            notifyUsers result.versions[0].images, result.owner, oldthis.user.name, oldthis.user.image, "like", pageName, version
+            notifyUsers result.versions[0].images, result.owner, oldthis.user.userId, oldthis.user.image, "like", pageId, version
             everyone.now.updateMain()
           else
             callback err
@@ -111,7 +161,7 @@ module.exports = (everyone, nowjs) ->
     else if action is "unlike"
       if version is null
         pageModel.update
-          pageName: pageName
+          _id: pageId
         ,
           $pull:
             likes: @user.name
@@ -133,7 +183,7 @@ module.exports = (everyone, nowjs) ->
         
         #console.log(pullObj2);
         pageModel.update
-          pageName: pageName
+          _id: pageId
           "versions.currentVersion": version
         ,
           $pull:

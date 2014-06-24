@@ -27,6 +27,9 @@ imageSchema = new Schema(
   d2d:
     type: Boolean
     default: false
+  mediaId:
+    type: Schema.Types.ObjectId
+    ref: 'mediaModel'
 )
 
 divSchema = new Schema(
@@ -113,13 +116,15 @@ pageSchema = new Schema(
 
 notifySchema = new Schema(
   user: String
+  userObj:  { type: Schema.Types.ObjectId, ref: 'userModel', index: true }
   page: String
+  pageObj:  { type: Schema.Types.ObjectId, ref: 'pageModel'}
   action: String
   version: Number
   time:
     type: Date
     default: Date.now
-
+    index: true
   img: String
 )
 
@@ -136,7 +141,7 @@ textSchema = new Schema(
 
 onlineSchema = new Schema(
   user: String
-  page: String
+  page: { type: Schema.Types.ObjectId, ref: 'pageModel' }
   nowId:
     type: String
     index: true
@@ -150,5 +155,8 @@ textModel : mongoose.model("textModel", textSchema)
 versionModel : mongoose.model("versionModel", versionSchema)
 notifyModel : mongoose.model("notifyModel", notifySchema)
 onlineModel : mongoose.model("onlineModel", onlineSchema)
+
+
+
 
 

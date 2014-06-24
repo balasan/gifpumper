@@ -8,7 +8,8 @@ angular.module('gifpumper', [
   # "wu.masonry",
   "ngCkeditor",
   'pasvaz.bindonce',
-  'angularFileUpload'
+  'angularFileUpload',
+  'colorpicker.module'
 ])
   .value('$anchorScroll', angular.noop)
   .config ($routeProvider, $locationProvider, $httpProvider) ->
@@ -26,7 +27,7 @@ angular.module('gifpumper', [
         controller: 'spaceCtrl'
 
 
-      .when "/*",
+      .when "/:pageName/:version",
         templateUrl: "partials/page"
         controller: 'spaceCtrl'
 

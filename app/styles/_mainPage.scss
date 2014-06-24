@@ -22,17 +22,26 @@ $cubicEasing: linear;
   width:100%;
   max-height:600px;
 }
-.pageList{
-  width:70%;
-  padding-left:25%;
+
+.activePages{
+  width:20%;
+  position:absolute;
   margin-top:80px;
-  margin-left:0px;
+  margin-left:20px;
+}
+
+.pageList{
+  width:45%;
+  margin-left:25%;
+  margin-top:80px;
+  padding:0, 20px;
   display: inline-block;
+  // background-color:rgb(233,233,133);
   // position:relative;
   // overflow:auto;
   &.userList{
-    width:65%;
-    margin-left: 100px;
+    // width:65%;
+    margin-left: 30%;
     .pageItem{
       background-color: rgba(255,255,255,.5);
     }
@@ -68,15 +77,12 @@ $cubicEasing: linear;
   border-radius:5px;
   margin:10px 1%;
 
-  width:100%;
+  // width:100%;
   // float:left;
   position:relative;
-  // opacity: 0;
-  // display:inline-block;
+
   vertical-align:middle;
-  // float:left;
-  // .transition(all @cubicEasing 800ms);
-  // .transform(scale(.001));
+
   &.loaded{
     // .transform(scale(1));
     opacity: 1;
@@ -130,7 +136,12 @@ $cubicEasing: linear;
 
 .feed{
   overflow:auto;
-  width:40%;
+  // width:40%;
+
+  width:45%;
+  margin-left:25%;
+  margin-top:80px;
+  padding:0, 20px;
 
   z-index:1;
   height:auto;
@@ -140,9 +151,7 @@ $cubicEasing: linear;
   // height: 100%;
   // position: fixed;
 
-  margin-left:40px;
   // padding-top:10px;
-  margin-top: 80px;
   font-size: 20px;
   #feedContainer{
     margin-top: 5px;
@@ -202,4 +211,11 @@ $cubicEasing: linear;
 }
 #profileContainer{
   background-color:rgba(255,255,255,.5);
+  position:fixed;
+  top:100px;
+  left:4%;
+  width:25%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  
 }

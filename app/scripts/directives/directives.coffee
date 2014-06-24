@@ -4,6 +4,26 @@
 app = angular.module("gifpumper")
 
 
+app.directive 'perspective', ($document)->
+  link:(scope,el,att)->
+    mainDiv = angular.element(document.getElementById('mainDiv'))
+
+    el.on 'scroll', (e)->
+      scrollTop = el[0].scrollTop
+      scrollLeft = el[0].scrollLeft
+      width = el[0].offsetWidth
+      height = el[0].offsetHeight
+
+      scope.originy = scrollTop +  height/2 + "px"
+      scope.originx = scrollLeft+width/2 + "px"
+
+      # console.log(scrollTop)
+      # mainDiv.css
+      #   '-webkit-transform-origin-y': scrollTop +  height/2 + "px"
+      #   '-webkit-transform-origin-x': scrollLeft+width/2 + "px"
+
+        # 'perspective-origin': 
+
 
 app.directive "randColor", ()->
   link:(scope,el,att)->
@@ -86,6 +106,7 @@ app.directive "element", ($document, $rootScope, $timeout) ->
       if(!$rootScope.selected)
         okToDeselect = false;
       $rootScope.selected = scope.el._id
+
 
       elWidth = el[0].offsetWidth 
       elHeight = el[0].offsetHeight
@@ -214,14 +235,17 @@ app.directive "element", ($document, $rootScope, $timeout) ->
       el.parent().parent().unbind('mouseup', deselect)
       el.parent().parent().on('mouseup', deselect)
 
-    scope.openEditor = ()->
+    # scope.openEditor = ()->
       # $parent.editElement = pageData.images | getById:$parent.selected; 
-      scope.$parent.$parent.editMenu=!scope.$parent.$parent.editMenu
+      # scope.$parent.$parent.editMenu=!scope.$parent.$parent.editMenu
       # okToDeselect = false;
       # $rootScope.selected = scope.el._id
 
     scope.closeEditor = ()->
       okToDeselect=true;
+
+
+
 
     scope.$on '$destroy', ()->
       el.parent().unbind "mousedown", deselect
@@ -243,17 +267,27 @@ app.directive "page", ($document, $window, $rootScope)->
     tx = 0
     tz = 0
 
+    timer = null
     scope.stopAnimation = false;
+
+    time = null
     updateMt = ()->
+
+      now = new Date().getTime()
+      dt = now - (time || now)
+      time = now
+      inc = 0.2*dt/15
+
       drx = rX- scope.mt.rotX
       dry = rY-scope.mt.rotY
       dz = tz - scope.mt.z 
       dx = tx - scope.mt.x 
 
-      if Math.abs(drx)>1 then drx *= .2
-      if Math.abs(dry)>1 then dry *= .2
-      if Math.abs(dz)>1 then dz *= .2
-      if Math.abs(dx)>1 then dx *= .2
+      if(inc < 1)
+        if Math.abs(drx)>1 then drx *= inc
+        if Math.abs(dry)>1 then dry *= inc
+        if Math.abs(dz)>1 then dz *= inc
+        if Math.abs(dx)>1 then dx *= inc
 
       scope.mt.rotX += drx
       scope.mt.rotY += dry 
@@ -261,14 +295,14 @@ app.directive "page", ($document, $window, $rootScope)->
       scope.mt.z += dz
       scope.$apply()
       if !scope.stopAnimation
-        $window.requestAnimationFrame updateMt
+        timer = $window.requestAnimationFrame updateMt
 
-    $window.requestAnimationFrame updateMt
+    timer = $window.requestAnimationFrame updateMt
 
 
     $document.on 'mousemove', (e) ->
-      xRot =  +.5 - event.clientX/window.innerWidth;
-      yRot =  - .5 + event.clientY/window.innerHeight;
+      xRot =  +.5 - e.clientX/window.innerWidth;
+      yRot =  - .5 + e.clientY/window.innerHeight;
       if scope.keys.space
         rX=yRot*300
         rY=xRot*300
@@ -285,7 +319,7 @@ app.directive "page", ($document, $window, $rootScope)->
     scale = 1000.0
 
     parent.on 'pointerdown', (e)->
-      if $rootScope.selected != null
+      if $rootScope.selected != null || e.button > 1
         return
       parent.addClass('grab')
       startX = e.x + rY*ww*4/scale
@@ -322,8 +356,13 @@ app.directive "page", ($document, $window, $rootScope)->
           # tz -= Math.cos(scope.mt.rotY*Math.PI/180) * 80
           # tx += Math.sin(scope.mt.rotY*Math.PI/180) * 80          
           e.preventDefault()
-        when 37 then rY -=20
-        when 39 then rY +=20
+        when 37 
+          rY -=20
+          e.preventDefault()
+        when 39 
+          rY +=20
+          e.preventDefault()
+
     $document.on 'keyup', (e) ->
       switch e.which
         when 90 then scope.keys.z = false
@@ -337,7 +376,8 @@ app.directive "page", ($document, $window, $rootScope)->
       $document.unbind 'mousemove'
       scope.stopAnimation = true
       parent.off 'pointerdown'   
-      parent.off 'pointerup'   
+      parent.off 'pointerup' 
+      $window.cancelAnimationFrame(timer) 
 
 
 

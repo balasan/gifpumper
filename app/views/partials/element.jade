@@ -20,6 +20,6 @@ div.element.editableElement(
       i.zTransform.fa.fa-windows(ng-mousedown="transform='xy'")
       i.zTransform.fa.fa-repeat(ng-mousedown="transform='rotate'")
       i.zTransform.fa.fa-arrows(ng-mousedown="transform='move'")
-      i.fa.fa-pencil-square-o(ng-click="openEditor()")
+      i.fa.fa-pencil-square-o(ng-click="$parent.openEditor()")
   span( ng-include="'partials/elements/'+(el.contentType | contentType)+'El'")
 

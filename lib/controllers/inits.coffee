@@ -37,7 +37,7 @@ module.exports = (everyone, nowjs, sessionStore) ->
       @user.name = "n00b"
       return    
 
-    console.log(cookie)
+    # console.log(cookie)
     cookie = unescape(cookie).split('.')[0].slice(2)
     oldthis = this
 
@@ -51,8 +51,10 @@ module.exports = (everyone, nowjs, sessionStore) ->
         return
       else
         console.log(session)
-        console.log(session.user)
-        if session != undefined and session.passport.user != undefined
+        oldthis.user.userId = session.passport.user
+        # console.log(session.user)
+        # console.log(session.passport.user)
+        if session and session.passport.user 
           
           # oldthis.user.name = session.user
           db.userModel.findOne
@@ -66,7 +68,9 @@ module.exports = (everyone, nowjs, sessionStore) ->
           , (err, result) ->
             if !err
               oldthis.user.image = result.userImage 
-              oldthis.user.name = result.username 
+              oldthis.user.name = result.username
+              console.log oldthis.user.name + " connected"
+
               
               # too quick doesn't work :\
               setTimeout ()->
@@ -77,7 +81,7 @@ module.exports = (everyone, nowjs, sessionStore) ->
         else
           oldthis.user.name = "n00b";
           # return;
-        console.log oldthis.user.name + " connected"
+          console.log oldthis.user.name + " connected"
 
 
   everyone.now.resetNewNotify = ()->
@@ -131,21 +135,23 @@ module.exports = (everyone, nowjs, sessionStore) ->
       callback res.userImage, username  unless err
 
 
-  everyone.now.getPagePic = (page, callback) ->
+  everyone.now.getPagePic = (pageId, callback) ->
     db.pageModel.findOne
-      pageName: page
+      _id: pageId
     ,
       backgroundImage: 1
       "images.url": 1
       background: 1
+      coverImage :1
     , (err, res) ->
       if not err and res?
-        url = undefined
-        img = undefined
-        url = res.backgroundImage  if res? and res.backgroundImage isnt `undefined` and res.backgroundImage isnt ""
-        img = res.images[0].url  if res? and res.images isnt `undefined` and res.images[0] isnt `undefined` and res.images[0] isnt ""
-        color = res.background
-        callback url, img, color, page
+        # url = undefined
+        # img = undefined
+        # url = res.backgroundImage  if res? and res.backgroundImage isnt `undefined` and res.backgroundImage isnt ""
+        # img = res.images[0].url  if res? and res.images isnt `undefined` and res.images[0] isnt `undefined` and res.images[0] isnt ""
+        # color = res.background
+        # callback url, img, color, page
+        callback res
       else
         console.log err
 
@@ -198,22 +204,6 @@ module.exports = (everyone, nowjs, sessionStore) ->
 
 
 
-  #TODO finish dynamic loading of main feed
-  everyone.now.loadMainNotify = (page, number, filter, callback) ->
-    # @user.name is "n00b"
-    #return;
-    start = -(page+1) * number
-
-    db.pageModel.findOne
-      pageName: "main"
-    ,
-      notify:
-        $slice: [start, number]
-    , (err, result) ->
-      unless err
-        callback result.notify
-      else
-        console.log err
 
 
   everyone.now.loadMainPage = (page, number, filter, callback) ->
@@ -254,23 +244,28 @@ module.exports = (everyone, nowjs, sessionStore) ->
       else callback err
 
 
+  mainPageId = ""
+  db.pageModel.findOne
+      pageName: 'main'
+    ,
+      _id: 1
+        # $slice: -100
+    , (error, result) ->
+      mainPageId = result._id
+
+
+
   # TODO make this cleaner
   everyone.now.loadAll = (pageName, userProfile, version, callback) ->
 
     #var pagesGroup = {};
-    groupName = pageName
-    groupName = "profile___" + userProfile  if pageName is "profile"
-    
-    @user.name is "n00b"
-    
-    console.log 'permissions'
-    console.log @user.pagePermissions[pageName]
-    if @user.pagePermissions[groupName] is `undefined` or (@user.pagePermissions[groupName] is 3 and @user.pagePermissions[groupName] isnt "owner")
-      
-      callback "This page is private"
-      return
 
+    # groupName = pageName
+    # groupName = "profile___" + userProfile  if pageName is "profile"
     
+    # @user.name is "n00b"
+    # console.log "current userId: " + @user.userId   
+
     unless version is `undefined`
       sliceParam = [parseInt(version), 1]
     else
@@ -293,12 +288,25 @@ module.exports = (everyone, nowjs, sessionStore) ->
       if error
         callback error, null
       else
+        groupName = result._id
+
+        everyone.now.getPagePermissions(result, userProfile, version, null)
+
         
+        # console.log 'permissions'
+        # console.log oldthis.user.pagePermissions[result._id]
+        # if oldthis.user.pagePermissions[groupName] is `undefined` or (oldthis.user.pagePermissions[groupName] is 3 and oldthis.user.pagePermissions[groupName] isnt "owner")
+          
+          # callback "This page is private"
+          # return
+
+    
+
         nowjs.getGroup(groupName).addUser oldthis.user.clientId
-        nowjs.getGroup("eyebeam-real-time").addUser oldthis.user.clientId  if oldthis.user.name is "eyebeam"
+        # nowjs.getGroup("eyebeam-real-time").addUser oldthis.user.clientId  if oldthis.user.name is "eyebeam"
         
         #TODO: not n00b?
-        if result.privacy < 3
+        if result.privacy < 3 && pageName != 'main' && pageName != 'profile'
           db.onlineModel.update
             nowId: oldthis.user.clientId
           ,
@@ -313,16 +321,23 @@ module.exports = (everyone, nowjs, sessionStore) ->
         nowjs.getGroup(groupName).pageUsers = {}  if nowjs.getGroup(groupName).pageUsers is `undefined`
         
         #leavePage
+
         if oldthis.user.currentPage isnt `undefined` and oldthis.user.currentPage isnt groupName
           if oldthis.user.currentPage?
+            
             nowjs.getGroup(oldthis.user.currentPage).exclude(oldthis.user.clientId).now.updatePageUser "delete", oldthis.user.name
             delete nowjs.getGroup(oldthis.user.currentPage).pageUsers[oldthis.user.clientId]
 
             nowjs.getGroup(oldthis.user.currentPage).removeUser oldthis.user.clientId
-            nowjs.getGroup("main").exclude(oldthis.user.clientId).now.updateFeed oldthis.user.name, oldthis.user.image, oldthis.user.currentPage, "leave"
+            
+            nowjs.getGroup(mainPageId).exclude(oldthis.user.clientId).now.updateFeed oldthis.user.name, null, oldthis.user.currentPage, "leave"
             oldthis.user.currentPage = null
+
+        
         oldthis.user.currentPage = groupName
-        nowjs.getGroup("main").now.updateFeed oldthis.user.name, oldthis.user.image, groupName, "join"  if result.privacy < 3
+        nowjs.getGroup(mainPageId).now.updateFeed oldthis.user.name, pageName, groupName, "join"  if result.privacy < 3
+        
+
         oldthis.now.updatePageUser "replace", nowjs.getGroup(groupName).pageUsers, userProfile
         if oldthis.user.name is "n00b"
           userObj = {}
@@ -334,6 +349,7 @@ module.exports = (everyone, nowjs, sessionStore) ->
           userObj[oldthis.user.name] = oldthis.user
           nowjs.getGroup(groupName).pageUsers[oldthis.user.clientId] = userObj
           nowjs.getGroup(groupName).now.updatePageUser "add", [userObj]
+          console.log nowjs.getGroup(groupName).pageUsers
         callback null, result
 
 
@@ -346,12 +362,13 @@ module.exports = (everyone, nowjs, sessionStore) ->
   db.onlineModel.remove {}, (err) ->
 
 
-  everyone.now.getAllUsers = (callback) ->
+  everyone.now.getAllUsersOnline = (callback) ->
     db.onlineModel.find {},
       user: 1
       page: 1
       _id: 0
-    , (err, res) ->
+    .populate('page',"coverImage pageName owner images backgroundImage")
+    .exec (err, res) ->
       callback res  unless err
 
 
@@ -385,7 +402,7 @@ module.exports = (everyone, nowjs, sessionStore) ->
 
     console.log('LEAVING')
 
-    nowjs.getGroup("main").exclude(@user.clientId).now.updateFeed @user.name, @user.name, @user.currentPage, "leave"  unless @user.currentPage is `undefined`
+    nowjs.getGroup(mainPageId).exclude(@user.clientId).now.updateFeed @user.name, @user.name, @user.currentPage, "leave"  unless @user.currentPage is `undefined`
     delete nowjs.getGroup(@user.currentPage).pageUsers[@user.clientId]  unless nowjs.getGroup(@user.currentPage).pageUsers is `undefined`
     nowjs.getGroup(@user.currentPage).now.updatePageUser "delete", @user.name
     
@@ -402,9 +419,9 @@ module.exports = (everyone, nowjs, sessionStore) ->
 
 
 
-  everyone.now.getAllPages = (callback)->
-    db.pageModel.find (err, result)->
-      callback(result)
+  # everyone.now.getAllPages = (callback)->
+  #   db.pageModel.find (err, result)->
+  #     callback(result)
 
   everyone.now.updateImageWH = (data)->
     console.log(data._id)
@@ -416,4 +433,53 @@ module.exports = (everyone, nowjs, sessionStore) ->
       true,
       (err) ->
         console.log err if err
+
+
+
+
+  everyone.now.getPagePermissions = (result, userProfile, version, callback) ->
+    oldthis = this
+    @user.pagePermissions = {}  if @user.pagePermissions is `undefined`
+    @user.name is "n00b"
+    
+    if result.currentVersion isnt undefined and version? and version isnt ""
+      if result.currentVersion <= version
+        callback result.currentVersion+version
+        console.log(version)
+        return
+    owner = false
+    if result.owner is oldthis.user.name
+      oldthis.user.pagePermissions[result._id] = "owner"
+      owner = true
+    else
+      oldthis.user.pagePermissions[result._id] = result.privacy
+    unless result.editors is `undefined`
+      i = 0
+
+      while i < result.editors.length
+        oldthis.user.pagePermissions[result._id] = 0  if result.editors[i] is oldthis.user.name and not owner
+        i++
+    oldthis.user.pagePermissions[result._id] = 2  if oldthis.user.name is "n00b" and result.privacy < 2
+    
+
+
+    if result.pageName is "profile"
+      pageId = oldthis.userId
+      if userProfile is oldthis.user.name
+        oldthis.user.pagePermissions[pageId] = "owner"
+      else if oldthis.user.name is "n00b"
+        oldthis.user.pagePermissions[pageId] = 2
+      else
+        oldthis.user.pagePermissions[pageId] = 2
+
+
+        
+    # if result.pageName is "invite"
+    #   oldthis.user.pagePermissions[result._id] = 0
+    #   oldthis.user.pagePermissions[result._id] = "owner"  if oldthis.user.name is "balasan"
+    # oldthis.user.pagePermissions[result._id] = "owner"  if oldthis.user.name is "gifpumper"
+    # oldthis.now.setPagePermissions oldthis.user.pagePermissions[result._id], owner
+    # if callback
+    #   callback null, oldthis.user.name, oldthis.user.pagePermissions[result._id]
+
 

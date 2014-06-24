@@ -9,64 +9,64 @@ module.exports = (everyone) ->
   #/////////////
   #/PERMISSIONS
   #///////////
-  console.log(everyone)
+  # console.log(everyone)
 
-  everyone.now.getPagePermissions = (pageName, userProfile, version, callback) ->
-    oldthis = this
-    @user.pagePermissions = {}  if @user.pagePermissions is `undefined`
-    @user.name is "n00b"
+  # everyone.now.getPagePermissions = (pageName, userProfile, version, callback) ->
+  #   oldthis = this
+  #   @user.pagePermissions = {}  if @user.pagePermissions is `undefined`
+  #   @user.name is "n00b"
     
-    #groupName='invite';
-    #pageName='invite';
+  #   #groupName='invite';
+  #   #pageName='invite';
     
-    #
-    # if(version==null || version==undefined)
-    #   version=-1;
-    #
-    db.pageModel.findOne
-      pageName: pageName
-    ,
-      privacy: true
-      owner: true
-      editors: true
-      currentVersion: 1
-    , (err, result) ->
-      if not err and result isnt `undefined`
-        if result.currentVersion isnt undefined and version? and version isnt ""
-          if result.currentVersion <= version
-            callback result.currentVersion+version
-            console.log(version)
-            return
-        owner = false
-        if result.owner is oldthis.user.name
-          oldthis.user.pagePermissions[pageName] = "owner"
-          owner = true
-        else
-          oldthis.user.pagePermissions[pageName] = result.privacy
-        unless result.editors is `undefined`
-          i = 0
+  #   #
+  #   # if(version==null || version==undefined)
+  #   #   version=-1;
+  #   #
+  #   db.pageModel.findOne
+  #     pageName: pageName
+  #   ,
+  #     privacy: true
+  #     owner: true
+  #     editors: true
+  #     currentVersion: 1
+  #   , (err, result) ->
+  #     if not err and result isnt `undefined`
+  #       if result.currentVersion isnt undefined and version? and version isnt ""
+  #         if result.currentVersion <= version
+  #           callback result.currentVersion+version
+  #           console.log(version)
+  #           return
+  #       owner = false
+  #       if result.owner is oldthis.user.name
+  #         oldthis.user.pagePermissions[result._id] = "owner"
+  #         owner = true
+  #       else
+  #         oldthis.user.pagePermissions[result._id] = result.privacy
+  #       unless result.editors is `undefined`
+  #         i = 0
 
-          while i < result.editors.length
-            oldthis.user.pagePermissions[pageName] = 0  if result.editors[i] is oldthis.user.name and not owner
-            i++
-        oldthis.user.pagePermissions[pageName] = 2  if oldthis.user.name is "n00b" and result.privacy < 2
-        if pageName is "profile"
-          pageName = "profile___" + userProfile
-          if userProfile is oldthis.user.name
-            oldthis.user.pagePermissions[pageName] = "owner"
-          else if oldthis.user.name is "n00b"
-            oldthis.user.pagePermissions[pageName] = 2
-          else
-            oldthis.user.pagePermissions[pageName] = 2
-        if pageName is "invite"
-          oldthis.user.pagePermissions[pageName] = 0
-          oldthis.user.pagePermissions[pageName] = "owner"  if oldthis.user.name is "balasan"
-        oldthis.user.pagePermissions[pageName] = "owner"  if oldthis.user.name is "gifpumper"
-        oldthis.now.setPagePermissions oldthis.user.pagePermissions[pageName], owner
-        callback null, oldthis.user.name, oldthis.user.pagePermissions[pageName]
-      else
-        console.log err
-        callback "noPage"
+  #         while i < result.editors.length
+  #           oldthis.user.pagePermissions[result._id] = 0  if result.editors[i] is oldthis.user.name and not owner
+  #           i++
+  #       oldthis.user.pagePermissions[result._id] = 2  if oldthis.user.name is "n00b" and result.privacy < 2
+  #       if pageName is "profile"
+  #         pageName = "profile___" + userProfile
+  #         if userProfile is oldthis.user.name
+  #           oldthis.user.pagePermissions[result._id] = "owner"
+  #         else if oldthis.user.name is "n00b"
+  #           oldthis.user.pagePermissions[result._id] = 2
+  #         else
+  #           oldthis.user.pagePermissions[result._id] = 2
+  #       if pageName is "invite"
+  #         oldthis.user.pagePermissions[result._id] = 0
+  #         oldthis.user.pagePermissions[result._id] = "owner"  if oldthis.user.name is "balasan"
+  #       oldthis.user.pagePermissions[result._id] = "owner"  if oldthis.user.name is "gifpumper"
+  #       oldthis.now.setPagePermissions oldthis.user.pagePermissions[result._id], owner
+  #       callback null, oldthis.user.name, oldthis.user.pagePermissions[result._id]
+  #     else
+  #       console.log err
+  #       callback "noPage"
 
 
   everyone.now.logStuff = (msg) ->

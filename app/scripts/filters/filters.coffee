@@ -13,14 +13,22 @@ app.filter "feedFilter", ()->
       fused = []
       newEl={}
       for el in dataCopy
+
+        if !el.pageObj
+          continue
+        # if last && el.page == last.page[0].name && el.user == last.user && el.action == last.action
+          # continue;
         newEl = 
-          img : el.img
-          user : el.user
+          img : el.userObj.userImage
+          user : el.userObj.username
           page : 
-            name: el.page
+            name: el.pageObj.pageName
             version : el.version
+            data : el.pageObj
+          time  : el.time
           action : el.action
-        if !last || last.user != el.user || last.action !=el.action
+
+        if el.action == 'new' || !last || last.user != el.user || last.action !=el.action
           fused.push(newEl)
           last = newEl
           lastText = [newEl.page]
@@ -37,6 +45,15 @@ app.filter "noobs", ()->
       when 0 then return ""
       when 1 then return "n00b"
       else return noobs + " n00b"
+
+app.filter "editType", ()->
+  (contentType) ->
+    switch contentType
+      when '', undefined, 'image' then return "image"
+      when 'text' then return "text"
+      when 'div' then return "div"
+      else 'media'
+
 
 app.filter "contentType", ()->
   (contentType) ->
@@ -82,12 +99,12 @@ app.filter 'timeAgo', ()->
           page.edited = "a while ago"
       data
 
-# app.filter 'timeago', ()->
-#     (date) ->
-#       if(date!="")
-#         moment(date).fromNow();
-#       else
-#         "a while ago"
+app.filter 'timeago', ()->
+    (date) ->
+      if(date!="")
+        moment(date).fromNow();
+      else
+        "a while ago"
 
 
 app.filter 'unsafe', ($sce) ->
@@ -283,13 +300,13 @@ app.filter 'version',  () ->
 app.filter 'feedUrl', ()->
   (page) ->
     name = window.encodeURIComponent(page.name)
-    if page.version
+    if page.version != undefined
       name+'/'+page.version
     else name
 
 app.filter 'versionText',  () ->
   (version) ->
-    if version
+    if version != undefined
       return ' v' + version
     else return ''
 

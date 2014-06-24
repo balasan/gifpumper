@@ -1,25 +1,26 @@
 {
-	"name": "gifpumper",
-	"version": "0.0.0",
-	"dependencies": {
-		"momentjs": "latest",
-		"ng-file-upload-shim": "~1.4.0",
-		"angular": "1.2.11",
-		"json3": "~3.2.6",
-		"es5-shim": "~2.1.0",
-		"angular-resource": "1.2.11",
-		"angular-cookies": "1.2.11",
-		"angular-sanitize": "1.2.11",
-		"angular-route": "1.2.11",
-		"font-awesome": "~4.1.0",
-		"angular-bindonce": "~0.3.1",
-		"ng-ckeditor": "~0.2.1",
-		"pointerevents-polyfill": "~0.2.0",
-		"ng-file-upload": "~1.4.0"
-	},
-	"devDependencies": {
-		"angular-mocks": "1.2.11",
-		"angular-scenario": "1.2.11"
-	},
-	"testPath": "test/client/spec"
+  "name": "gifpumper",
+  "version": "0.0.0",
+  "dependencies": {
+    "momentjs": "latest",
+    "ng-file-upload-shim": "~1.4.0",
+    "angular": "1.2.11",
+    "json3": "~3.2.6",
+    "es5-shim": "~2.1.0",
+    "angular-resource": "1.2.11",
+    "angular-cookies": "1.2.11",
+    "angular-sanitize": "1.2.11",
+    "angular-route": "1.2.11",
+    "font-awesome": "~4.1.0",
+    "angular-bindonce": "~0.3.1",
+    "ng-ckeditor": "~0.2.1",
+    "pointerevents-polyfill": "~0.2.0",
+    "ng-file-upload": "~1.4.0",
+    "angular-bootstrap-colorpicker": "~3.0.7"
+  },
+  "devDependencies": {
+    "angular-mocks": "1.2.11",
+    "angular-scenario": "1.2.11"
+  },
+  "testPath": "test/client/spec"
 }

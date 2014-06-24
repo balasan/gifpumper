@@ -30,23 +30,19 @@
                   span(ng-show="!$last")
                     |, 
 
-     #fbLike(style='opacity:.8; padding:0; padding-left:10px;margin-right:0px;float:left')
-       <div class="fb-like" data-href="http://gifpumper.com" data-send="false" data-layout="button_count" data-width="80" data-show-faces="false"></div>
 
-
-
-#online.movable.gpui(ng-controller="onlineCtrl")
-  div(style="height:18px; padding:2px;") users on this page:
-  div( bindonce="user" ng-repeat="user in onlineUsers")
-    a(href="/profile/{{user}}")
-      .thumbContainer(crop freeze w="400" h="300")
-        img( bo-src="user.image")
-      .onlineName {{user.name}}
-  a(href="javascript:void(0)" ng-show='noobs | noobs')
-    .thumbContainer(freeze-gif )
-        img(src="http://dumpfm.s3.amazonaws.com/images/20110926/1317014842765-dumpfm-FAUXreal-1297659023374-dumpfm-frankhats-yes.gif")
-    .onlineName {{user.name}}
-      {{noobs | noobs}}
+//- #online.movable.gpui(ng-controller="onlineCtrl")
+//-   div(style="height:18px; padding:2px;") users on this page:
+//-   div( bindonce="user" ng-repeat="user in onlineUsers")
+//-     a(href="/profile/{{user}}")
+//-       .thumbContainer(crop freeze w="400" h="300")
+//-         img( bo-src="user.image")
+//-       .onlineName {{user.name}}
+//-   a(href="javascript:void(0)" ng-show='noobs | noobs')
+//-     .thumbContainer(freeze-gif )
+//-         img(src="http://dumpfm.s3.amazonaws.com/images/20110926/1317014842765-dumpfm-FAUXreal-1297659023374-dumpfm-frankhats-yes.gif")
+//-     .onlineName {{user.name}}
+//-       {{noobs | noobs}}
 
 
 #loginMenu(ng-class="{'uiClosed':!loginMenu || loggedIn , uiOpen:loginMenu && !loggedIn}" )

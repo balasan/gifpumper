@@ -1,19 +1,54 @@
 |feed
 #feedContainer
-  div.mainNotify( bindonce="feedEl" ng-repeat="feedEl in filteredFeed" )
-    a(  bo-href="'profile/' + feedEl.user | encode")
-      .thumbContainer.shadow(freeze crop   w="400" h="300")
-          img( bo-src="feedEl.img | profileThumb")
-    div(style='text-overflow: ellipsis; overflow: hidden; padding-top: 4px; display: inline-block; width: 70%; min-height: 60px;')
-      span(style='height: 300px; cursor: pointer;')
-        a(bo-href="'profile/' + feedEl.user | encode" bo-text="feedEl.user")
-        | 
-      span(bo-text="feedEl.action | action")  
-      |    
-      span(bindonce=feedPage ng-repeat="feedPage in feedEl.page")
-        a(bo-href="feedPage | feedUrl")
-          //- a(bo-href="'/'+ (page.name|encode) + '/' + page.version|version") 
-          span(bo-text="feedPage.name")
-          span(bo-text="feedPage.version | versionText")
-        span(bo-show="!$last")
-          |, 
+  div.mainNotify.pageItem( bindonce="feedEl" ng-repeat="feedEl in filteredFeed" )
+    .created(bo-if="feedEl.action=='new'" ng-init="page=feedEl.page[0].data")
+      //- |{{feedEl.page[0].data}}
+      div.galleryImage
+        a( page-data='page' thumbnail freeze w="600" h="600" bo-href="'/'+page.pageName | encode")
+          //- .thumbImg(bg-image bg="{{page.thumb}}")
+          img.thumb
+
+      div.infoDiv
+        div.pageTitle
+          a(bo-href="'/'+page.pageName | encode")
+            span(bo-text="page.pageName")
+
+        div(bo-show="userProfile" ng-text='page.owner | owner:userProfile') 
+
+        div
+          span(bo-text="'created  '") 
+          span(bo-text="page.created | timeago") 
+          //- span( bo-text="page.created" )
+        //- div(ng-show="page.created" ) edited 
+          //- span(timeago date="{{page.edited}}") 
+
+        div
+          span( bo-text="page.privacy | privacy")
+          span( bo-text = "' ' + (page.versions.length+1)+'v'")
+
+        a.miniButton(bo-click="who = !who; $emit('masonry.reload');")
+          span(bo-text="page.likes.length")
+          img.heartImg(src='https://s3.amazonaws.com/gifpumper/ui/heart-03.gif')
+        div.whoLikes(bo-show="who")  
+          div( bindonce='user' ng-repeat="user in page.likes")
+            a(bo-href="'/profile/' + user | encode") 
+              span(bo-text="user")
+    
+    .other(bo-if="feedEl.action!='new'")
+      a(  bo-href="'profile/' + feedEl.user | encode")
+        .thumbContainer.shadow(freeze crop   w="400" h="300")
+            img( bo-src="feedEl.img | profileThumb")
+      div(style='text-overflow: ellipsis; overflow: hidden; padding-top: 4px; display: inline-block; width: 70%; min-height: 60px;')
+        span(style='height: 300px; cursor: pointer;')
+          a(bo-href="'profile/' + feedEl.user | encode" bo-text="feedEl.user")
+          | 
+        span(bo-text="feedEl.action | action")  
+        |    
+        span(bindonce=feedPage ng-repeat="feedPage in feedEl.page")
+          a(bo-href="feedPage | feedUrl")
+            //- a(bo-href="'/'+ (page.name|encode) + '/' + page.version|version") 
+            span(bo-text="feedPage.name")
+            span(bo-text="feedPage.version | versionText")
+          span(bo-show="!$last")
+            |,
+        div(bo-text="feedEl.time | timeago" )

@@ -7,20 +7,32 @@ block content
 
 
   span(ng-controller="pageCtrl")
+    #online.movable.gpui( ng-cloak ng-controller="onlineCtrl")
+      div(style="height:18px; padding:2px;") users on this page:
+      div( ng-cloak bindonce="user" ng-repeat="user in onlineUsers")
+        a(href="/profile/{{user}}")
+          .thumbContainer(crop freeze w="400" h="300")
+            img( bo-src="user.image")
+          .onlineName() {{user.name}}
+      a(href="javascript:void(0)" ng-show='noobs | noobs')
+        .thumbContainer(freeze-gif )
+            img(src="http://dumpfm.s3.amazonaws.com/images/20110926/1317014842765-dumpfm-FAUXreal-1297659023374-dumpfm-frankhats-yes.gif")
+        .onlineName {{user.name}}
+          {{noobs | noobs}}
   
+
     div(ng-include="'partials/right-menu'")
     div(ng-include="'partials/left-menu'")  
 
     #mainPage( ng-show="showMain")
       span(save-scroll)
-      //- div.feed(page-data="pageData" feed  ng-controller="feedCtrl" )
-      div.pageList( gallery, infinite, ng-controller="galleryCtrl" )
+      div.onlineList( ng-include="'partials/online'" ng-controller="activeCtrl" )
+
+      div.feed(page-data="pageData" infinite feed  ng-controller="feedCtrl" )
+      //- div.pageList( gallery, infinite, ng-controller="galleryCtrl" )
         
       //- div(ng-include="'partials/chat'")  
       //- div(ng-include="'partials/left-menu'")  
-    
-    #chatButton(style="display:none; height:30px") 
-      <a href='javascript:openChat();'><img src="http://how2program.com/thumbs/4054_Pixel_chat_icon_._.._.jpg6U4SDMK2R5.jpg",border='0px', height='30px'></a>
 
     div(ng-include="'partials/chat'")
 
@@ -138,16 +150,6 @@ block content
       a(href='javascript:openMenu(\'saveMenu\');') x
 
 
-
-
-
-
-  #prevVersionDiv.shadow.twoD(style="display:none;z-index:1000;top:50%;left:0px;position:fixed;")
-       a(href="javascript:goToPage(pageData.pageName, null, prevVersion)")
-         img(src='https://s3.amazonaws.com/gifpumper/ui/arrow-left.gif')
-  #nextVersionDiv.shadow.twoD(style="display:inline;display:none;z-index:1000;top:50%;right:0px;position:fixed;")  
-       a(href="javascript:goToPage(pageData.pageName, null, nextVersion)")
-         img(src="https://s3.amazonaws.com/gifpumper/ui/arrow-right.gif")   	  
 
 
 

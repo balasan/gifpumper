@@ -39,3 +39,27 @@ h1{
   height:100%;
   pointer-events:none;
 }
+
+.versionNav{
+  z-index:1000;
+  top:50%;
+  font-size:70px;
+  padding:5px;
+  left:0px;
+  margin-top:-30px;
+  a{
+    color:white;
+  }
+  text-shadow: 0 0 2px rgba(0,0,0,.5);
+  position:fixed;
+  &.next{
+    right:0px;
+    left:auto;
+  }
+}
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+
+

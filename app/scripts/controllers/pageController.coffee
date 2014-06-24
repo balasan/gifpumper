@@ -4,7 +4,7 @@
 app =  angular.module("gifpumper")
 
 
-app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $rootScope, pageCache) ->
+app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $rootScope, pageCache, userService) ->
 
   $scope.mt=
     rotY:0
@@ -13,6 +13,9 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
     x:0
     z:0
     y:0
+
+
+
 
   currentPage = null;
   $scope.likePage = (likesPage, callback) ->
@@ -34,13 +37,18 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
 
       # callback() 
   
+
+  $scope.openEditor = () ->
+    $scope.editMenu = true;
+
+
   $scope.setPrivacy = () ->
     pageService.setPrivacy $scope.pageName, $scope.pageData.privacy, null, (err)->
       if err 
         alert err
 
   $scope.deletePage = ()->
-    pageService.deletePage $scope.pageName, (err)->
+    pageService.deletePage $scope.pageData._id, (err)->
       if !err 
         $location.path('/')
         $scope.$apply();
@@ -73,30 +81,41 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
       return
 
   
-  $scope.setBackground = () ->
+  $scope.setBackground = (options) ->
     bg =
       color: $scope.pageData.background
       image: $scope.pageData.backgroundImage
       display: $scope.pageData.bgDisplay
-    pageService.setBackground($scope.pageName,bg)
-    
+    updateBackground()
+    if options && options.server
+      if $scope.pageName == 'profile'
+        userService.setBackground($scope.userProfile,bg)
+      else
+        pageService.setBackground(bg, options)
+      
   pageService.on 'updateBackground',(bg)->
     $scope.pageData.backgroundImage = bg.image
     $scope.pageData.background = bg.color
     $scope.pageData.bgDisplay = bg.display
-    udpateBackground()
+    updateBackground()
 
 
 
 
-  $scope.updateElement = (elArray)->
+  $scope.updateElement = (elArray, options)->
     for el in elArray
       index = $filter('getById')($scope.pageData.images,el._id)
       if(index != undefined)
-        $scope.pageData.images[index] = el 
+        if !options || !options.replaceUrl 
+          $scope.pageData.images[index].url = el.url
+        else   
+          $scope.pageData.images[index] = el 
       else $scope.pageData.images.push(el)
       # $scope.apply()
     return
+
+  pageService.on('updateElement', $scope.updateElement)
+
 
   pageService.on('newElement', $scope.updateElement)
 
@@ -112,8 +131,9 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
   pageService.on('deleteResponce', $scope.deleteElement)
 
 
-  $scope.addNewImgCtrl = (elArray)->
-    pageService.addNewImg($scope.pageName, elArray)
+  $scope.addNewImgCtrl = (options ,elArray)->
+    pageService.addNewImg options, elArray, (err)->
+      console.log(err)
 
 
 
@@ -123,7 +143,7 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
 
 
   bg = document.getElementById('background')
-  udpateBackground=(clear)->
+  updateBackground=(clear)->
     if clear 
       bg.style.backgroundColor = ""
       bg.style.backgroundImage = ""
@@ -148,7 +168,7 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
     if $scope.pageName == ""
       $scope.showMain = true
       if $scope.pageData
-        udpateBackground()
+        updateBackground()
     else
       $scope.showMain = false
 
@@ -168,7 +188,7 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
     if $scope.pageName == ""
       $scope.pageName = 'main'
     $scope.pageData = {}
-    udpateBackground(true)
+    updateBackground(true)
 
     # $scope.saveScroll = (scroll) ->
     #   pageCache.saveScroll($scope.pageName, scroll)
@@ -180,8 +200,12 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
       pageService.getData($scope.pageName,$scope.userProfile,$scope.pageVersion).then (result) ->
         if result.pageName != $scope.pageName
           return;
-        $scope.pageData = result
-        udpateBackground();
+        $scope.maxVersion = result.currentVersion
+        if(!$scope.pageVersion)
+          $scope.pageData = result
+        else
+          $scope.pageData = result.versions[0]
+        updateBackground();
         console.log($scope.pageData)
         if $scope.pageData.likes
           $scope.likesPage = $scope.pageData.likes.indexOf($rootScope.currentUser.name)>-1
@@ -190,7 +214,7 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
     else
       # $scope.scroll = pageCache.getScroll $scope.pageName
       pageService.getData($scope.pageName,$scope.userProfile,$scope.pageVersion)
-      udpateBackground();
+      updateBackground();
       if $scope.pageData.likes
         $scope.likesPage = $scope.pageData.likes.indexOf($rootScope.currentUser.name)>-1
     

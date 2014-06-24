@@ -11,7 +11,7 @@ div
   //- .masonry-brick
   .pageItem(bindonce='page'   ng-repeat="page in pagesData track by $index")
       div.galleryImage
-        a(thumbnail freeze w="600" h="600" bo-href="'/'+page.pageName | encode")
+        a( page-data='page' thumbnail freeze w="600" h="600" bo-href="'/'+page.pageName | encode")
           //- .thumbImg(bg-image bg="{{page.thumb}}")
           img.thumb
 

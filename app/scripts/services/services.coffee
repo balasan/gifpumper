@@ -32,8 +32,9 @@ app.factory 'onlineService', (nowService)->
 
 
 app.factory 'elService', ()->
-  editElement : (pageName, element, isPosition)->
-    now.editElement(pageName, element, false, isPosition)
+  editElement : (options, element, callback)->
+    now.editElement options, element, (err)->
+      callback err
   elementFeed : (pageName, element)->
     now.elementFeed(pageName, element)
   deleteElement : (pageName, element)->
@@ -49,23 +50,23 @@ app.factory 'currentUser', (nowService, $http) ->
   onlineUsers = {}
   noobs=0;
 
-  nowService.on 'updatePageUser', (action, users) ->
-    if action == 'replace'
-       onlineUsers = {}
-       noobs = 0; 
+  # nowService.on 'updatePageUser', (action, users) ->
+  #   if action == 'replace'
+  #      onlineUsers = {}
+  #      noobs = 0; 
 
-    # not obj if delete
-    if action == 'delete'
-      delete onlineUsers[users]
-      if users == 'n00b'
-        noobs--
-    else
-      for key, group of users
-        for i, user of group
-          if i == 'n00b'
-            noobs++
-          else if !onlineUsers[user]
-            onlineUsers[user.name] = user
+  #   # not obj if delete
+  #   if action == 'delete'
+  #     delete onlineUsers[users]
+  #     if users == 'n00b'
+  #       noobs--
+  #   else
+  #     for key, group of users
+  #       for i, user of group
+  #         if i == 'n00b'
+  #           noobs++
+  #         else if !onlineUsers[user]
+  #           onlineUsers[user.name] = user
   
   on : nowService.on
 
@@ -220,7 +221,35 @@ app.factory('feed', ($q, $rootScope, nowService)->
     deferred.promise;
 )
 
+app.factory 'activePages', (nowService)->
+  
+  pageData = {}
+
+  on : nowService.on
+
+  getAllUsersOnline : (callback)->
+    now.ready ->
+      now.getAllUsersOnline (res)->
+        callback(res)
+  getPageData : (pageId, callback)->
+    if pageData[pageId]
+      callback(pageData[pageId])
+    else 
+      now.ready ->
+        now.getPagePic pageId, (data)->
+          pageData[pageId] = data
+          callback(pageData[pageId])
+
+
+
+
 app.factory('pageService', ($q, $rootScope, nowService)-> 
+
+
+  # TODO take this out of backend or implement, don't need it?
+  now.setPagePermissions = (_pageName, _permissions) ->
+    permissions = _permissions
+
 
   on : nowService.on
   # now.newElement = (elArray)->
@@ -230,7 +259,6 @@ app.factory('pageService', ($q, $rootScope, nowService)->
     now.ready -> 
       now.likePage action, version, (err, action)->
         callback(err, action)
-
 
   setPrivacy : (pageName, privacy, editors, callback)->
     now.ready ->
@@ -242,9 +270,9 @@ app.factory('pageService', ($q, $rootScope, nowService)->
       now.addPage desiredPageName, copyPage, (err, newPage)->
         callback(err, newPage)
 
-  deletePage : (pageName, callback)->
+  deletePage : (pageId, callback)->
     now.ready ->
-      now.deletePage pageName, (err)->
+      now.deletePage pageId, (err)->
         callback(err)
 
   addNewImg : (pageName, elArray)->
@@ -253,30 +281,29 @@ app.factory('pageService', ($q, $rootScope, nowService)->
         if err 
           alert(err)
 
-  setBackground : (pageName,bg)->
+  setBackground : (bg, options)->
     now.ready ->
-      now.setBackground pageName, bg, (err)->
+      now.setBackground bg, options, (err)->
         if err 
           alert(err)   
+
+
 
   getData : (pageName,userProfile,version)->
     permissins = 0
 
-    now.updateFeed =(user, image, page, action) ->
-      console.log (user) 
-      console.log (image) 
-      console.log (page)
-      console.log (action) 
+    # now.updateFeed =(user, image, page, action) ->
+    #   console.log (user) 
+    #   console.log (image) 
+    #   console.log (page)
+    #   console.log (action) 
 
-
-    now.setPagePermissions = (_pageName, _permissions) ->
-      permissions = _permissions
 
     deferred = $q.defer();
     now.ready ->
-      now.getPagePermissions pageName, userProfile, version, (err) ->
-        if(!err)
-          now.loadAll pageName, userProfile, version, (err,data) ->
-            $rootScope.$apply(deferred.resolve(data);)
+      # now.getPagePermissions pageName, userProfile, version, (err) ->
+        # if(!err)
+      now.loadAll pageName, userProfile, version, (err,data) ->
+        $rootScope.$apply(deferred.resolve(data);)
     deferred.promise;
 )

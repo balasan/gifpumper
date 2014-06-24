@@ -1,10 +1,15 @@
 mongoose = require('mongoose')
 pageModel = mongoose.model('pageModel')
+notifyModel = mongoose.model('notifyModel')
+userModel = mongoose.model('userModel')
 
 
 module.exports = (everyone, nowjs) ->
 
   notifyUsers = require('./notify')(everyone,nowjs)
+
+
+
 
 
   #//////////////////
@@ -43,7 +48,7 @@ module.exports = (everyone, nowjs) ->
           newPage = new pageModel(pageInit)
           newPage.save (error, result) ->
             unless error
-              notifyUsers [], result.owner, oldthis.user.name, oldthis.user.image, "new", pageName
+              notifyUsers [], result.owner, oldthis.user.userId, oldthis.user.image, "new", result._id
               callback null, pageName
             else
               callback error
@@ -66,7 +71,7 @@ module.exports = (everyone, nowjs) ->
           #console.log(newPage)
           newPage.save (error, result) ->
             unless error
-              notifyUsers [], result.owner, oldthis.user.name, oldthis.user.image, "new", pageName
+              notifyUsers [], result.owner, oldthis.user.userId, oldthis.user.image, "new", result._id
               #TODO look into this more
               everyone.now.updateMain(result, 'add')
               callback null, pageName
@@ -76,28 +81,21 @@ module.exports = (everyone, nowjs) ->
         else callback "name already taken, try a different one", null  unless !result1
 
 
-  everyone.now.deletePage = (pageName, callback) ->
-    unless @user.pagePermissions[pageName] is "owner"
+  everyone.now.deletePage = (pageId, callback) ->
+    unless @user.pagePermissions[pageId] is "owner"
       callback "you don't have permission do delete this page"
       return
     pageModel.remove
-      pageName: pageName
+      _id: pageId
     , (error) ->
       unless error
         callback null
 
         everyone.now.updateMain pageName, 'delete'
         
-        pageModel.update
-          pageName: "main"
-        ,
-          $pull:
-            notify:
-              page: pageName
-        ,  
-          multi : true
-        , (err) ->
-          console.log err  if err
+        notifyModel.find
+          pageObj: pageId
+        .remove().exec()
 
       else
         callback error
@@ -150,7 +148,7 @@ module.exports = (everyone, nowjs) ->
           unless err
             callback null, savedVersion
             nowjs.getGroup(pageName).now.updateVersion savedVersion
-            notifyUsers result.images, result.owner, oldthis.user.name, oldthis.user.image, "version", pageName, savedVersion
+            notifyUsers result.images, result.owner, oldthis.user.userId, oldthis.user.image, "version", pageName, savedVersion
 
       else
         console.log error

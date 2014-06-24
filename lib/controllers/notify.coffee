@@ -5,23 +5,82 @@ userModel = mongoose.model('userModel')
 lastNotify = {}
 
 module.exports = (everyone, nowjs)->
-  notifyUsers = (images, _owner, user, image, action, pageName, version) ->
+
+  # getMainFeed = (req, res)->
+  #   offset = req.params.offset
+  #   limit = req.params.limit
+
+  everyone.now.loadMainNotify = (page, number, filter, callback) ->
+    # @user.name is "n00b"
+    #return;
+    start = page * number
+
+
+    console.log(@user.userId)
+
+    userModel.findOne
+      _id : @user.userId
+      # username: "Pepper"
+    ,
+      favoriteUsers : 1
+    , (err, user) ->
+      # console.log user
+      if !err && user
+        notifyModel.find
+          action :
+            $ne : 'version'
+          userObj : 
+            $in : user.favoriteUsers
+          # $slice: [start, number]
+        .sort
+          'likesN': 1
+          'time':-1
+        .skip(start)
+        .limit(number)
+        .populate
+          path: 'pageObj'
+          select: "likesN images backgroundImage coverImage created owner likes pageName"
+          match:
+            privacy:
+              $lte:2
+        .populate('userObj', "userImage username")
+        .exec (err, result) ->
+          unless err
+            callback result
+          else
+            console.log err
+
+
+
+
+
+
+  notifyUsers = (images, _owner, userId, image, action, pageId, version) ->
     notify = new notifyModel()
-    notify.user = user
+    notify.userObj = userId
     notify.action = action
-    notify.page = pageName
+    notify.pageObj = pageId
     notify.img = image
-    notify.version = version  unless !version 
-    if action isnt "msg" and (lastNotify isnt {} or lastNotify.user isnt notify.user or lastNotify.page isnt notify.page or lastNotify.action isnt notify.action or lastNotify.version isnt notify.version)
-      pageModel.update
-        pageName: "main"
-      ,
-        $push:
-          notify: notify
-      , (err) ->
-        console.log err  if err
-      # if everyone.now.notifyFeed 
+    notify.version = version  unless !version
+
+    if action isnt "msg"
+      
+      notifyModel.findOne
+        userObj: userId 
+        pageObj: pageId 
+        action: action
+        version: version
+      , (err, res) ->
+        if res
+          # res.time = new Date()
+          # res.save(err) ->
+          #   if err then console.log(err)
+        else
+          newNotify = new notifyModel(notify)
+          newNotify.save (err)->
+            if err then console.log(err) 
       everyone.now.notifyFeed [notify], null, true
+    
     lastNotify = notify
     contributors = {}
     
@@ -58,4 +117,79 @@ module.exports = (everyone, nowjs)->
           result2.save (err) ->
             console.log err  if err
       i++
+
+
+
+  # everyone.now.separateNotify = (callback)->
+  #   console.log "running db ops"
+
+  #   setPageId = (note, callback)->
+  #     pageModel.findOne 
+  #       pageName: note.page
+  #     ,
+  #       _id : 1
+  #       pageName: 1
+  #     , (err, page) ->
+  #       if !err 
+  #         if !page
+  #           console.log "missing page " + note.page
+  #         else
+  #           note.pageObj = page._id
+  #           callback(note)
+
+  #   setUserId = (note, callback)->
+  #     userModel.findOne 
+  #         username: note.user
+  #       ,
+  #         _id : 1
+  #       , (err, user) ->
+  #         if !err 
+  #           if !user
+  #             console.log "missing user" + note.user
+  #           else
+  #             note.userObj = user._id
+  #           callback(note)      
+
+
+  #   notifyModel.find({}).remove ()->
+  #     pageModel.findOne
+  #       pageName: 'main'
+  #     ,
+  #       notify: 1
+  #     , (err, res)->
+  #         if !err 
+  #           # console.log res
+  #           callback (res.notify)
+  #           for note in res.notify
+  #             callback(note)
+  #             setPageId note, (note)->
+  #               setUserId note, (note)->
+  #                 newNote = new notifyModel(note)
+  #                 newNote.save (err)->
+  #                   # callback(newNote)
+  #                   if err
+  #                     console.log(err)
+
+
+
+
+  # everyone.now.cleanNotify = (callback)->
+  #   notifyModel.find {}
+  #   .sort
+  #     'page':1
+  #     'user':1
+  #     'action':1
+  #     'version':1
+  #   .exec (err,res) ->
+  #     prev
+  #     for note in res
+  #       if prev
+  #         callback(note.page + ' ' +note.user + ' ' + note.action + ' ' + note.version)
+  #         if note.version == prev.version && note.page == prev.page && note.action == prev.action && note.user==prev.user 
+  #           note.remove()
+  #           callback('removing ' + note)
+  #       prev = note
+
+
+
 

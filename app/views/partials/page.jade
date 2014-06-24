@@ -1,7 +1,21 @@
 //- div(ng-controller="pageCtrl")
-#div3d( touch-action="none")
+#div3d(perspective touch-action="none")
   #mainDiv.mainDiv(page style="\
   -webkit-transform: {{mt | mainTransform}};\
   -moz-transform: {{mt | mainTransform}};\
   -0-transform: {{mt | mainTransform}};\
-  transform: {{mt | mainTransform}};")
+  transform: {{mt | mainTransform}};\
+  -webkit-transform-origin-y: {{originy}};\
+  -webkit-transform-origin-x:originx;\
+  transform-origin-y:{{originy}};\
+  transform-origin-x:{{originx}}")
+
+.versionNav.previous(ng-show="pageData.currentVersion && pageData.currentVersion>0")
+  a(href="/{{pageName}}/{{pageData.currentVersion-1}}")
+    .fa.fa-angle-left     
+.versionNav.next(ng-show="pageData.currentVersion+1<maxVersion")  
+  a(href="/{{pageName}}/{{pageData.currentVersion+1}}")
+    .fa.fa-angle-right   
+.versionNav.next(ng-show="pageData.currentVersion+1==maxVersion")  
+  a(href="/{{pageName}}")
+    .fa.fa-angle-right   

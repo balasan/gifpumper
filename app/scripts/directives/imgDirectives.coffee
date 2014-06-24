@@ -51,6 +51,9 @@ app.directive "crop", ($timeout)->
 
 
 app.directive "thumbnail", ($filter)->
+  scope:
+    'page': '=pageData'
+  # transclude:true
   link:(scope,el,att)->
     # page = att.page
     page = scope.page

@@ -34,7 +34,8 @@
       |bg 
     .nuMenu(rand-color ng-click='addMenu=!addMenu; ')
       i.fa.fa-plus
-.nuMenuContainer.gpui(ng-show="pageName=='profile' && currentUser.name==userProfile") 
+      
+.nuMenuContainer.profile.gpui(ng-show="pageName=='profile' && currentUser.name==userProfile") 
     .nuMenu(rand-color ng-click='backgroundMenu=!backgroundMenu') 
       |bg 
 
