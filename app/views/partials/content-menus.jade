@@ -104,6 +104,21 @@
 
   #editMediaContainer.menuContainer(ng-show="editType == 'media'")
     p youtube, vimeo or soundcloud url or any other embed code
+
+    //- youtube link:
+    //- input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editYoutubeUrl', placeholder='http://youtube.com/xxxx',onfocus="typing=true; ", onblur="typing=false;")
+    //- p
+    //- | vimeo link:
+    //- input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editVimeoUrl', placeholder='http://vimeo.com/555555',onfocus="typing=true; ", onblur="typing=false;")
+    //- p
+    //- | soundcloud link:
+    //- input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editSoundCloud', placeholder='paste soundcloud link here',onfocus="typing=true; ", onblur="typing=false;")
+    //- p
+    //- | mp3/mov embed:
+    //- input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editMp3', placeholder='http://domain.com/sound.mp3',onfocus="typing=true; ", onblur="typing=false;")
+    //- p
+    //- | other:
+    //- br
     textarea.textInput.editType.mediaEdit(ng-model="editElement.content" type='text', name='embed', id="editMedia", placeholder='paste embed code here')
     p
   #editDivContainer.menuContainer(ng-show="editType == 'div'")
