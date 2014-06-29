@@ -38,33 +38,14 @@
     textarea#addContent(ckeditor="editorOptions" ng-model="text")
     input.button( type='button', name='addGif', value='add', ng-click="addNewImg()")
 
+
+
   #editMediaContainer.menuContainer(ng-show="addType=='media'")
-    //- p
-    //- | youtube link:
-    //- br
-    //- input.mediaAdd(ng-model="youtubeUrl" type='text', id='youtubeUrl', placeholder='http://youtube.com/xxxx',onfocus="typing=true; ", onblur="typing=false;")
-    //- br
-    //- br
-    //- | vimeo link:
-    //- br
-    //- input.mediaAdd(ng-model="vimeoUrl" type='text', id='vimeoUrl', placeholder='http://vimeo.com/555555',onfocus="typing=true; ", onblur="typing=false;")
-    //- br
-    //- br
-    //- | soundcloud embed:
-    //- br
-    //- textarea.mediaAdd(ng-model="soundcloudUrl" type='text', id='soundCloud', placeholder='paste soundcloud embed code here',onfocus="typing=true; ", onblur="typing=false;")
-    //- br
-    //- br
-    //- | mp3/mov embed:
-    //- br
-    //- input.mediaAdd(ng-model="mp3Url"  type='text', id='mp3', placeholder='http://domain.com/sound.mp3',onfocus="typing=true; ", onblur="typing=false;")
-    //- br
-    //- br
-    //- | other:
-    //- br
     textarea.textInput#media(ng-model="media"  type='text', name='embed', placeholder='paste embed code here')
     br
     input.button( type='button', name='addGif', value='add', ng-click="addNewImg()")
+
+
 
   #editDivContainer.menuContainer(ng-show="addType=='div'")
     p
@@ -123,20 +104,6 @@
 
   #editMediaContainer.menuContainer(ng-show="editType == 'media'")
     p youtube, vimeo or soundcloud url or any other embed code
-    //- youtube link:
-    //- input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editYoutubeUrl', placeholder='http://youtube.com/xxxx',onfocus="typing=true; ", onblur="typing=false;")
-    //- p
-    //- | vimeo link:
-    //- input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editVimeoUrl', placeholder='http://vimeo.com/555555',onfocus="typing=true; ", onblur="typing=false;")
-    //- p
-    //- | soundcloud link:
-    //- input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editSoundCloud', placeholder='paste soundcloud link here',onfocus="typing=true; ", onblur="typing=false;")
-    //- p
-    //- | mp3/mov embed:
-    //- input.textInput.mediaEdit(ng-model="editElement.content" type='text', id='editMp3', placeholder='http://domain.com/sound.mp3',onfocus="typing=true; ", onblur="typing=false;")
-    //- p
-    //- | other:
-    //- br
     textarea.textInput.editType.mediaEdit(ng-model="editElement.content" type='text', name='embed', id="editMedia", placeholder='paste embed code here')
     p
   #editDivContainer.menuContainer(ng-show="editType == 'div'")
