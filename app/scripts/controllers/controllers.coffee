@@ -224,19 +224,6 @@ app.controller "userCtrl", ($scope, userService,$routeParams, $filter, pageServi
     # console.log(result)
 
 
-  # background stuff is redundant - separate controller?
-  $scope.setBackground = () ->
-    bg =
-      color: $scope.pageData.background
-      image: $scope.pageData.backgroundImage
-      display: $scope.pageData.bgDisplay
-    userService.setBackground($scope.userProfile,bg)
-    
-  userService.on 'updateBackground',(bg)->
-    $scope.pageData.backgroundImage = bg.image
-    $scope.pageData.background = bg.color
-    $scope.pageData.bgDisplay = bg.display
-    udpateBackground()
 
 
   bg = document.getElementById('background')

@@ -17,7 +17,10 @@ uniqueId = ()->
 module.exports = (everyone, nowjs)->
 
 
-  uploadToS3 = (url, callback)->
+  uploadToS3 = (media, callback)->
+    
+    url = media.sourceUrl
+
     options =
       uri: url
       encoding: 'binary'
@@ -31,6 +34,9 @@ module.exports = (everyone, nowjs)->
         contentType = response.headers['content-type']
 
         filename = url.substring(url.lastIndexOf('/')+1);
+        filename = filename.replace('+','');
+
+        # filename = encodeURIComponent(filename)
 
         date = new Date()
         path = date.getFullYear() + "/" + (date.getMonth() + 1) + '/'+ uniqueId() + filename
@@ -39,6 +45,7 @@ module.exports = (everyone, nowjs)->
           Body: body
           Key: path
           ContentType: contentType
+          ContentEncoding: 'utf8'
           Bucket: process.env.bucket
           ACL: 'public-read'
         , (error, data) ->
@@ -48,7 +55,9 @@ module.exports = (everyone, nowjs)->
             callback(error)
           else 
             console.log "success uploading to s3"
-            callback(null, "https://s3.amazonaws.com/gifpumper-images/" + path)
+            console.log(data)
+            media.localUrl = "https://s3.amazonaws.com/gifpumper-images/" + path
+            callback(null, media)
 
 
   uploadQue = []
@@ -69,49 +78,117 @@ module.exports = (everyone, nowjs)->
     if queInProgress
       return;
 
-    media = uploadQue[0]
+    console.log(uploadQue)
+
+    if uploadQue[0] 
+      media = uploadQue[0].media
+      options = uploadQue[0].options
     if media
       queInProgress = true
-      uploadToS3 media.sourceUrl, (err, localUrl)->
-        # if media.pageId
-        console.log "uploaded file to: "+ localUrl
-        pageModel.find
-          'images.url' : media.sourceUrl
-        , (err, pages)->
-          if !err
-            for page in pages 
-              for image in page.images
-                if image.url == media.sourceUrl
-                  image.url = localUrl
-                  page.save()
-                    # carefull here? closure problem
-                  nowjs.getGroup(page._id).now.updateElement [image], {url:true}
-                  console.log "updated image in " + page.pageName
-              
-            mediaModel.update
-              _id : media.id
-            ,
-              $set :
-                localUrl : localUrl
-            , (err)->
-              if err
-                console.log (err)
-              else
-                console.log "processed que element"
-                uploadQue.splice(0,1)
-                queInProgress=false;
-                console.log uploadQue.length + " left in que"
-                processQue()
- 
 
-      # uploadToS3 img.url, (err, localUrl)->
-      #   if !err 
-      #     pageModel.update
-      #       'images.url': img.url
-      #     ,
-      #       $set: 
-      #         'images.$.url': localUrl,
-      #     , (err)
+
+      uploadToS3 media, (err, media)->      
+        if options.user
+          uploadToS3 media, userCallback
+          saveMedia(media)
+        else        
+          uploadToS3 media, pageCallback
+          saveMedia(media)
+
+
+   saveMedia = (media)->
+    media.save (err)->
+      if !err         
+        console.log "processed que element"
+        uploadQue.splice(0,1)
+        queInProgress=false;
+        console.log uploadQue.length + " left in que"
+        processQue()
+
+
+      # mediaModel.update
+      #   _id : media.id
+      # ,
+      #   $set :
+      #     localUrl : localUrl
+      # , (err)->
+      #   if err
+      #     console.log (err)
+      #   else
+      #     console.log "processed que element"
+      #     uploadQue.splice(0,1)
+      #     queInProgress=false;
+      #     console.log uploadQue.length + " left in que"
+      #     processQue()
+
+
+  userCallback = (err, media)->
+    console.log "uploaded file to: "+ media.localUrl
+    userModel.find
+      $or: [
+        {
+          userImage: media.sourceUrl
+        }
+        {
+          backgroundImage: media.sourceUrl
+        }
+      ]
+    , (err, users) ->
+        for user in users
+          # swap in local background image 
+          if user.backgroundImage == media.sourceUrl
+            user.backgroundImage = media.localUrl
+            nowjs.getGroup(user.id).now.updateBackground 
+              image: media.localUrl
+              imgOnly: true
+            user.save()
+            console.log("updated background image in " + user.username)
+
+          if user.userImage == media.sourceUrl
+            user.userImage = media.localUrl
+            user.save()
+            # TODO: Implement nowjs userpic
+
+
+
+  pageCallback = (err, media)->
+    # if media.pageId
+    console.log "uploaded file to: "+ media.localUrl
+
+
+    pageModel.find
+      $or: [
+        {
+          "images.url": media.sourceUrl
+        }
+        {
+          backgroundImage: media.sourceUrl
+        }
+      ]
+    , (err, pages) ->
+      if !err
+        for page in pages
+
+          # swap in local background image 
+          if page.backgroundImage == media.sourceUrl
+            page.backgroundImage = media.localUrl
+            page.save()
+            nowjs.getGroup(page._id).now.updateBackground 
+              image: media.localUrl
+              imgOnly: true
+            console.log("updated background image in " + page.pageName)
+
+          # swap in local image
+          for image in page.images                  
+            if image.url == media.sourceUrl
+              image.url = media.localUrl
+              page.save()
+                # carefull here? closure problem
+              nowjs.getGroup(page._id).now.updateElement [image], {replaceUrl:true}
+              console.log "updated image in " + page.pageName
+          
+
+
 
 
   startQue()
@@ -120,8 +197,8 @@ module.exports = (everyone, nowjs)->
 
                
 
-  addToMedia : (img, pageId, userId, options, callback) ->
-    local =false
+  addToMedia : (img, options) ->
+    local = false
     if img.contentType == "image"  
       if !img.url.match('https://gifpumper-images.s3.amazonaws.com/')
         local=false
@@ -129,22 +206,12 @@ module.exports = (everyone, nowjs)->
         local=true
         
       mediaModel.findOne
-        sourceUrl : img.url
+        $or:[
+          {sourceUrl : img.url},
+          {localUrl : img.url}
+        ]
       , (err, media)->
         if err then console.log err
-
-        updatePage = (img,pageId,mediaId)->
-          pageModel.update
-            _id : pageId
-            'images._id' : img.id
-          ,
-            $set: 
-              'images.$.mediaId': mediaId
-          , (err) ->
-            if !err 
-              console.log "updated page img mediaID"
-              nowjs.getGroup(pageId).now.updateElement [img],  {url:true}
-
 
         updateUserUploads = (mediaId, userId)->
           userModel.update
@@ -159,18 +226,12 @@ module.exports = (everyone, nowjs)->
               console.log 'updated user uploads' 
 
 
-        if media
+        if media && media.localUrl
           console.log 'media entry exists'
           console.log media
           if media.localUrl
             img.url = media.localUrl
-          updatePage(img,pageId,media.id)
-          if options && options.upload
-            updateUserUploads(media.id,userId)
-          
-          callback(img, media.id)
-
-
+          options.callback(img, media.id, options)
         else
           media = new mediaModel
           if options && options.upload
@@ -178,20 +239,22 @@ module.exports = (everyone, nowjs)->
           media.sourceUrl = img.url
           if local 
             media.localUrl = img.url
+            media.uploadedBy = options.userId
+            updateUserUploads(media.id,userId)
+
           media.save (err)->
             console.log 'created media entry'
             console.log media
-            # updatePage(img,pageId,media.id)
-            callback(img, media.id)
+            options.callback(img, media.id, options)
 
-            if options && options.upload
-              updateUserUploads(media.id,userId)
-              console.log "new upload"
+            console.log "new upload"
+            console.log local
             
             if !local
               # upload to S3 que
-              media.pageId = pageId
-              uploadQue.push media
+              uploadQue.push 
+                media: media
+                options: options
               processQue()
   
 

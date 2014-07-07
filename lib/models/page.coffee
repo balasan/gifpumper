@@ -78,6 +78,9 @@ pageSchema = new Schema(
   backgroundImageType: Number
   background: String
   backgroundImage: String
+  backgroundImageId:
+    type: Schema.Types.ObjectId
+    ref: 'mediaModel'
   text: [textSchema]
   contributors: []
   parent: String

@@ -81,22 +81,35 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
       return
 
   
+
   $scope.setBackground = (options) ->
     bg =
       color: $scope.pageData.background
       image: $scope.pageData.backgroundImage
       display: $scope.pageData.bgDisplay
+
     updateBackground()
     if options && options.server
       if $scope.pageName == 'profile'
-        userService.setBackground($scope.userProfile,bg)
+        userService.setBackground bg, options, (err)->
+          if err 
+            console.log(err)
       else
         pageService.setBackground(bg, options)
+
+
       
   pageService.on 'updateBackground',(bg)->
-    $scope.pageData.backgroundImage = bg.image
-    $scope.pageData.background = bg.color
-    $scope.pageData.bgDisplay = bg.display
+    img = new Image()
+    img.src = bg.image
+    img.onload = ()->
+      $scope.pageData.backgroundImage = bg.image
+      # TODO: fix flash
+      updateBackground()
+      img = null
+    if !bg.imgOnly
+      $scope.pageData.background = bg.color
+      $scope.pageData.bgDisplay = bg.display
     updateBackground()
 
 
@@ -106,10 +119,13 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
     for el in elArray
       index = $filter('getById')($scope.pageData.images,el._id)
       if(index != undefined)
-        if !options || !options.replaceUrl 
-          $scope.pageData.images[index].url = el.url
-        else   
-          $scope.pageData.images[index] = el 
+        if options && options.replaceUrl
+          for key, value of el
+            $scope.pageData.images[index][key] = value        
+        else
+          el.url = $scope.pageData.images[index].url
+          for key, value of el
+            $scope.pageData.images[index][key] = value 
       else $scope.pageData.images.push(el)
       # $scope.apply()
     return
@@ -127,6 +143,7 @@ app.controller "pageCtrl", ($scope, pageService, $location, $route, $filter, $ro
     else
       index = $filter('getById')($scope.pageData.images,elId)
       $scope.pageData.images.splice(index, 1);
+    $rootScope.selected= null
   
   pageService.on('deleteResponce', $scope.deleteElement)
 

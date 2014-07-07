@@ -1,10 +1,8 @@
-db={}
 mongoose = require('mongoose')
-db.pageModel = mongoose.model('pageModel')
-db.userModel = mongoose.model('userModel')
-db.textModel = mongoose.model('textModel')
-db.imageModel = mongoose.model('imageModel')
-
+pageModel = mongoose.model('pageModel')
+userModel = mongoose.model('userModel')
+textModel = mongoose.model('textModel')
+imageModel = mongoose.model('imageModel')
 mediaModel = mongoose.model('mediaModel')
 
 # notifyUsers = require('./notify')
@@ -28,7 +26,7 @@ module.exports = (everyone, nowjs) ->
   #////////
 
   #var liveStream=[];
-  everyone.now.elementFeed = (pageName, element) ->
+  everyone.now.elementFeed = (pageName, element, callback) ->
     
     pageId = @user.currentPage
     allowed = checkPermissions(@user)
@@ -46,10 +44,9 @@ module.exports = (everyone, nowjs) ->
     #   properites: properties
     #   elId: _id
 
-    
     #liveStream.push(thisUpdate);
     # nowjs.getGroup(pageName).exclude(oldthis.user.clientId).now.updateChanges _id, properties
-    nowjs.getGroup(pageId).exclude(oldthis.user.clientId).now.newElement [element]
+    nowjs.getGroup(pageId).exclude(oldthis.user.clientId).now.updateElement [element], {replaceUrl:false}
 
   everyone.now.editElement = (options, element, callback) ->
 
@@ -63,7 +60,7 @@ module.exports = (everyone, nowjs) ->
 
     oldthis = this
     _id = element._id
-    db.pageModel.findOne
+    pageModel.findOne
       _id: pageId
       "images._id": _id
     , (error, result) ->
@@ -79,13 +76,18 @@ module.exports = (everyone, nowjs) ->
           console.log "not replacing url"
           element.url = result.images.id(_id).url
         result.images.id(_id).set element
-        console.log result.images.id(_id).url
-        console.log  element.url
+        # console.log result.images.id(_id).url
+        # console.log  element.url
+
+
 
         result.save (error, result) ->
           unless error
             # if position
-            nowjs.getGroup(pageId).exclude(oldthis.user.clientId).now.newElement [element]
+            if !options
+              options={}
+              options.replaceUrl=false
+            nowjs.getGroup(pageId).exclude(oldthis.user.clientId).now.newElement [element], {replaceUrl:options.replaceUrl}
             # else
               # nowjs.getGroup(pageId).now.newElement [element]
           #console.log(images)
@@ -115,7 +117,7 @@ module.exports = (everyone, nowjs) ->
         callback "invalid image url"
         continue
       imgArray[i].user = @user.name
-      imgs.push new db.imageModel(imgArray[i])
+      imgs.push new imageModel(imgArray[i])
 
       img = imgArray[i]
 
@@ -124,24 +126,9 @@ module.exports = (everyone, nowjs) ->
       i++
     console.log imgs
     
-    #TODO: real update feed?
+    #TODO: real update feed?          
 
-    # db.pageModel.findOne
-    #   _id: pageId
-    # , (err, page)->
-    #   if !err && page
-    #     for img in imgs
-    #       page.images.push(img)
-    #     page.save (err, res)->
-    #       notify = {} #new notifyModel();
-    #       notify.user = oldthis.user.name
-    #       notify.action = "update"
-    #       notify.page = pageId
-    #       nowjs.getGroup(pageId).now.newElement imgs
-          
-          
-
-    db.pageModel.update
+    pageModel.update
       _id: pageId
     ,
       $pushAll:
@@ -152,13 +139,34 @@ module.exports = (everyone, nowjs) ->
         notify.user = oldthis.user.name
         notify.action = "update"
         notify.page = pageId
-        nowjs.getGroup(pageId).now.newElement imgs
+        nowjs.getGroup(pageId).now.newElement imgs, {replaceUrl:true}
         
         #nowjs.getGroup('main').now.notify([notify],null, true)
         # need update notifications?   
         # everyone.now.notify [notify], null, true
+
+        # callback for addToMedia
+        updatePage = (img,mediaId,options)->
+          pageId = options.pageId
+          pageModel.update
+            _id : pageId
+            'images._id' : img.id
+          ,
+            $set: 
+              'images.$.mediaId': mediaId
+              'images.$.url': img.url
+          , (err) ->
+            if !err 
+              console.log "updated page img mediaID"
+              nowjs.getGroup(pageId).now.updateElement [img],  {replaceUrl:true}
+
+        options =
+          callback: updatePage
+          pageId : pageId
+          userId: oldthis.user.userId 
+
         for img in imgs
-          media.addToMedia img, pageId, oldthis.user.userId, options
+          media.addToMedia img, options
 
 
 
@@ -178,21 +186,47 @@ module.exports = (everyone, nowjs) ->
 
   everyone.now.updateUserPic = (username, url, callback) ->
     oldthis = this
+
+    updateUserPic = (img, mediaId, options)->
+      userId = options.userId
+      userModel.update
+        _id : userId
+      ,
+        $set:
+          userImageId: mediaId
+          userImage: img.url
+      , (err)->
+        if err 
+          console.log err
+        else 
+          console.log 'updated user bgId' 
+    
+
+
     unless username is @user.name
       callback "error"
       return
     else
-      db.userModel.update
+      userModel.update
         username: username
       ,
         $set:
           userImage: url
       , (error) ->
         oldthis.user.image = url
-        # unless error
+        unless error
+          options =
+            callback: updateUserPic
+            userId: oldthis.user.userId
+            user: true
+ 
+          media.addToMedia {contentType:'image', url: url}, options
+
           # TODO implement
           # everyone.now.updateUsrImg username, url
         callback(error)
+
+
 
 
 
@@ -208,7 +242,7 @@ module.exports = (everyone, nowjs) ->
 
       
     if all
-      db.pageModel.findOne
+      pageModel.findOne
         _id: pageId
       , (error, result) ->
         result.images = []
@@ -217,7 +251,7 @@ module.exports = (everyone, nowjs) ->
 
 
     else
-      db.pageModel.findOne
+      pageModel.findOne
         _id: pageId
       , (error, result) ->
         unless result.images.id(imgId) is `undefined`
@@ -238,7 +272,9 @@ module.exports = (everyone, nowjs) ->
       callback "this page is private, you can't make changes"
       return
     
-    db.pageModel.update
+    oldthis = this 
+
+    pageModel.update
       _id: pageId
     ,
       $set:
@@ -250,8 +286,33 @@ module.exports = (everyone, nowjs) ->
       unless err
         nowjs.getGroup(pageId).now.updateBackground bg
 
-        options.bg = true;
-        media.addToMedia img, pageId, oldthis.user.userId, options
+        # callback for addToMedia (only updates mediaId)
+        updatePage = (img,mediaId,options)->
+          pageId = options.pageId
+          pageModel.update
+            _id : pageId
+          ,
+            $set: 
+              'backgroundImageId': mediaId
+              'backgroundImage': img.url
+          , (err) ->
+            if !err 
+              console.log "updated page backgroundImg mediaID"
+              bg.image = img.url
+              nowjs.getGroup(pageId).now.updateBackground bg
+
+        options =
+          pageId : pageId
+          callback: updatePage
+          userId: oldthis.user.userId
+          bg: bg 
+          img: options.img
+
+        if bg.image && options.img
+          media.addToMedia {contentType:'image', url: bg.image}, options
+
+
+
 
       else
         callback err
@@ -260,12 +321,34 @@ module.exports = (everyone, nowjs) ->
 
 
 
-  everyone.now.setProfileBackground = (userProfile, bg, callback) ->
-    if userProfile != @user.name
+  everyone.now.setProfileBackground = (bg, options, callback) ->
+    
+
+    if encodeURIComponent(@user.currentPage) != encodeURIComponent(@user.userId)
       return
-      
-    db.userModel.update
-      username: userProfile
+    
+    userId =  @user.userId
+    oldthis = this
+
+    updateUserBg = (img, mediaId, options)->
+      userId = options.userId
+      userModel.update
+        _id : userId
+      ,
+        $set: 
+          backgroundImageId: mediaId
+          backgroundImage: img.url
+      , (err)->
+        if err 
+          console.log err
+        else 
+          console.log 'updated user bgId' 
+          nowjs.getGroup(userId).now.updateBackground 
+              image: img.url
+              imgOnly: true
+
+    userModel.update
+      _id: userId
     ,
       $set:
         backgroundImage: bg.image ? ""
@@ -274,7 +357,21 @@ module.exports = (everyone, nowjs) ->
     , (err) ->
       unless err
         callback()
-        nowjs.getGroup(pageName).now.updateBackground bg
+        console.log nowjs.getGroup(oldthis.user.userId)
+        nowjs.getGroup(oldthis.user.userId).now.updateBackground bg
+      
+        options =
+          callback: updateUserBg
+          userId: oldthis.user.userId
+          user: true
+          bg: bg 
+          img: options.img
+
+        if bg.image && options.img
+          media.addToMedia {contentType:'image', url: bg.image}, options
+
+
+
       else
         console.log err
 
@@ -295,13 +392,13 @@ module.exports = (everyone, nowjs) ->
 
     #TODO: permissions
     groupName = pageId
-    txt = new db.textModel(textObject)
+    txt = new textModel(textObject)
     txt.user = @user.name
     txt.text = textObject.text
     thereIsError = false
     if pageName is "profile"
       # groupName = "profile___" + userProfile
-      db.userModel.update
+      userModel.update
         _id: pageId
       ,
         $push:
@@ -316,7 +413,7 @@ module.exports = (everyone, nowjs) ->
     else
       
       #nowjs.getGroup(pageName).now.updateText(this.user.name,textObject.text);
-      db.pageModel.update
+      pageModel.update
         _id: pageId
       ,
         $push:
@@ -330,7 +427,7 @@ module.exports = (everyone, nowjs) ->
 
   everyone.now.findUser = (userTxt, callback) ->
     user = new RegExp("^" + userTxt, "i")
-    db.userModel.find
+    userModel.find
       username: user
     ,
       username: 1
@@ -343,7 +440,7 @@ module.exports = (everyone, nowjs) ->
 
   everyone.now.findPage = (page, callback) ->
     user = new RegExp("^" + page, "i")
-    db.pageModel.find
+    pageModel.find
       pageName: page
     ,
       pageName: 1
@@ -354,7 +451,8 @@ module.exports = (everyone, nowjs) ->
         console.log error
 
   checkPermissions = (user)->
-    if !user || !user.currentPage || !user.pagePermissions[user.currentPage]
+
+    if !user || !user.currentPage || user.pagePermissions[user.currentPage] == undefined
       return false
     pageId = user.currentPage
     if user.pagePermissions[pageId] > 0 and user.pagePermissions[pageId] isnt "owner"

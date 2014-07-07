@@ -165,10 +165,10 @@
   //- input.textInput(type='color' ng-model-options="{ debounce: 250 }" ng-model='pageData.background', ng-change='setBackground("background")')
 
   | background image:
-  .uploadForm(ng-controller="uploadCtrl")
+  .uploadForm(ng-controller="uploadCtrl"  ng-init="init('bg')")
     //- label(for='photos') Uploda your own file
     //- p.help-block Select pictures
-    div.button( ng-init="uploadType = 'background'" type='button' value="Upload File") Upload File
+    div.button(  type='button' value="Upload File") Upload File
       input#uploadBtn.btn(type='file', ng-file-select='onFileSelect($files)', multiple='false')
 
     .container(ng-repeat='file in files')
@@ -178,7 +178,7 @@
       button.btn.btn-ttc(type='button', ng-click='abort($index)', ng-show='file.progress != 100') Abort
 
   |or
-  input.textInput(type='text' ng-model-options="{ debounce: 250 }" ng-model='pageData.backgroundImage', placeholder='enter url here', maxlength='600', ng-change='setBackground({server:true})')
+  input.textInput(type='text' ng-model-options="{ debounce: 250 }" ng-model='pageData.backgroundImage', placeholder='enter url here', maxlength='600', ng-change='setBackground({server:true,img:true})')
   form(name='bgType')
       input(type='radio',  ng-model='pageData.bgDisplay', value='', ng-change='setBackground({server:true})')
       | tile

@@ -273,23 +273,31 @@ module.exports = (everyone, nowjs, sessionStore) ->
     oldthis = this
     
     #var pageReg = new RegExp("^"+pageName+"$",'i')
-    db.pageModel.findOne
-      pageName: pageName
-    ,
-      versions:
-        $slice: sliceParam
+    if pageName=='profile'
+      db.userModel.findOne
+        username: userProfile
+      , (error, result)->
+        pageCallback(result)
 
-      text:
-        $slice: -20
+    else
+      db.pageModel.findOne
+        pageName: pageName
+      ,
+        versions:
+          $slice: sliceParam
+        text:
+          $slice: -20
+        notify: 0
+          # $slice: -100
+      , (error, result) ->
+        if error
+          callback error, null
+        else
+          pageCallback(result)
 
-      notify: 0
-        # $slice: -100
-    , (error, result) ->
-      if error
-        callback error, null
-      else
+
+    pageCallback = (result)->
         groupName = result._id
-
         everyone.now.getPagePermissions(result, userProfile, version, null)
 
         
@@ -463,14 +471,14 @@ module.exports = (everyone, nowjs, sessionStore) ->
     
 
 
-    if result.pageName is "profile"
-      pageId = oldthis.userId
-      if userProfile is oldthis.user.name
-        oldthis.user.pagePermissions[pageId] = "owner"
-      else if oldthis.user.name is "n00b"
-        oldthis.user.pagePermissions[pageId] = 2
-      else
-        oldthis.user.pagePermissions[pageId] = 2
+    # if result.pageName is "profile"
+    #   pageId = oldthis.userId
+    #   if userProfile is oldthis.user.name
+    #     oldthis.user.pagePermissions[pageId] = "owner"
+    #   else if oldthis.user.name is "n00b"
+    #     oldthis.user.pagePermissions[pageId] = 2
+    #   else
+    #     oldthis.user.pagePermissions[pageId] = 2
 
 
         

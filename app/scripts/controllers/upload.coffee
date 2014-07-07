@@ -14,6 +14,10 @@ app.controller "uploadCtrl", ($scope, $http, $location, $upload, $rootScope) ->
   $http.get('/api/config').success (config)->
     $rootScope.config = config;
 
+  $scope.bg = false
+  $scope.init = (bg)->
+    if bg=="bg"
+      $scope.bg = true
 
   $scope.imageUploads = []
 
@@ -73,11 +77,12 @@ app.controller "uploadCtrl", ($scope, $http, $location, $upload, $rootScope) ->
                 key: data.postresponse.key
                 etag: data.postresponse.etag
 
-              $scope.$parent.newImgUrl = parsedData.location
 
-              if(scope.uploadType=="background")
-                $scope.$parent.setBackground({upload:true, server:true})
+              if($scope.bg)
+                $scope.$parent.pageData.backgroundImage = parsedData.location
+                $scope.$parent.setBackground({upload:true, server:true, img:true})
               else
+                $scope.$parent.newImgUrl = parsedData.location
                 $scope.$parent.addNewImg({upload:true})
 
               $scope.files = [];

@@ -249,7 +249,10 @@ app.directive "element", ($document, $rootScope, $timeout) ->
 
     scope.$on '$destroy', ()->
       el.parent().unbind "mousedown", deselect
+      $document.unbind('mousemove', mousemove);      
       $document.unbind "mouseup", mouseupHandler
+      $document.unbind "mouseup"
+      el.parent().parent().unbind('mouseup')
       el.unbind 'mousedown' 
       el.remove();
 

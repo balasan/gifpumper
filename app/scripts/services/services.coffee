@@ -101,11 +101,10 @@ app.factory('userService', ($q, $rootScope, nowService, $filter)->
       now.updateUserPic user, url, (err)->
         callback(err)
 
-  setBackground : (pageName,bg)->
+  setBackground : (bg, options, callback)->
     now.ready ->
-      now.setProfileBackground pageName, bg, (err)->
-        if err 
-          alert(err)
+      now.setProfileBackground bg, options, (err)->
+        callback(err)
 
   switchFilter : (_filter) ->
     filter = _filter
